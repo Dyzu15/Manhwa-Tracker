@@ -1,4 +1,4 @@
-// === Static Manhwa Data (you can add more later) ===
+// === Static Manhwa Data ===
 const staticManhwa = [
   {
     id: "solo-leveling",
@@ -33,11 +33,10 @@ function getBookmarks() {
 
 function toggleBookmark(id) {
   let bookmarks = getBookmarks();
-  if (bookmarks.includes(id)) {
-    bookmarks = bookmarks.filter(b => b !== id);
-  } else {
-    bookmarks.push(id);
-  }
+  bookmarks = bookmarks.includes(id)
+    ? bookmarks.filter(b => b !== id)
+    : [...bookmarks, id];
+
   localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
   renderLibrary();
 }
@@ -49,15 +48,11 @@ function isBookmarked(id) {
 // === Read Progress ===
 function toggleRead(id) {
   const isRead = localStorage.getItem(id) === "read";
-  if (isRead) {
-    localStorage.removeItem(id);
-  } else {
-    localStorage.setItem(id, "read");
-  }
+  isRead ? localStorage.removeItem(id) : localStorage.setItem(id, "read");
   renderLibrary();
 }
 
-// === Status Update ===
+// === Status ===
 function updateStatus(id, newStatus) {
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
   statusMap[id] = newStatus;
@@ -76,7 +71,6 @@ function renderList(data, containerId) {
   container.innerHTML = "";
 
   const selectedGenre = document.getElementById("genreFilter")?.value || "all";
-
   data.forEach(item => {
     if (selectedGenre !== "all" && item.genre !== selectedGenre) return;
 
@@ -84,19 +78,14 @@ function renderList(data, containerId) {
     const bookmarked = isBookmarked(item.id);
     const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
 
-    const card = document.createElement('div');
-    card.className = 'card';
-
+    const card = document.createElement("div");
+    card.className = "card";
     card.innerHTML = `
       <img src="${item.cover}" alt="${item.title}" onclick='openPopup(${JSON.stringify(item)})'>
       <h3>${item.title}</h3>
       <p>Chapter ${savedChapter}</p>
-      <button onclick="toggleRead('${item.id}')">
-        ${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}
-      </button>
-      <button onclick="toggleBookmark('${item.id}')">
-        ${bookmarked ? "⭐ Bookmarked" : "☆ Add to Library"}
-      </button>
+      <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
+      <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "⭐ Bookmarked" : "☆ Add to Library"}</button>
       <select onchange="updateStatus('${item.id}', this.value)">
         <option value="">📂 Set Status</option>
         <option value="reading">📖 Reading</option>
@@ -106,21 +95,27 @@ function renderList(data, containerId) {
         <option value="wishlist">💭 Wishlist</option>
       </select>
     `;
-
     container.appendChild(card);
   });
 }
 
 // === Genre Filter ===
-document.getElementById('genreFilter').addEventListener('change', () => {
-  renderList(staticManhwa, 'popular-list');
+document.getElementById("genreFilter").addEventListener("change", () => {
+  renderList(staticManhwa, "popular-list");
+});
+
+// === Search ===
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  const keyword = e.target.value.toLowerCase();
+  const filtered = staticManhwa.filter(m => m.title.toLowerCase().includes(keyword));
+  renderList(filtered, "popular-list");
 });
 
 // === My Library ===
 function renderLibrary() {
   const bookmarked = getBookmarks();
   const filtered = staticManhwa.filter(item => bookmarked.includes(item.id));
-  renderList(filtered, 'my-library');
+  renderList(filtered, "my-library");
 }
 
 // === Popup ===
@@ -129,6 +124,7 @@ let currentPopupId = null;
 function openPopup(item) {
   currentPopupId = item.id;
   const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
+
   document.getElementById("popupCover").src = item.cover;
   document.getElementById("popupTitle").textContent = item.title;
   document.getElementById("popupChapter").textContent = `Current: Chapter ${savedChapter}`;
@@ -143,10 +139,10 @@ function closePopup() {
 
 function saveChapterProgress() {
   const newChapter = document.getElementById("chapterInput").value;
-  if (currentPopupId && newChapter) {
+  if (currentPopupId && newChapter && Number(newChapter) > 0) {
     localStorage.setItem(`chapter_${currentPopupId}`, newChapter);
     closePopup();
-    renderList(staticManhwa, 'popular-list');
+    renderList(staticManhwa, "popular-list");
     renderLibrary();
   }
 }
@@ -161,22 +157,22 @@ if (themeToggle) {
 }
 
 // === Login Modal ===
-const loginBtn = document.querySelector('.login-btn');
-const loginModal = document.getElementById('loginModal');
-const usernameInput = document.getElementById('usernameInput');
+const loginBtn = document.querySelector(".login-btn");
+const loginModal = document.getElementById("loginModal");
+const usernameInput = document.getElementById("usernameInput");
 
-loginBtn?.addEventListener('click', () => {
-  loginModal.classList.remove('hidden');
+loginBtn?.addEventListener("click", () => {
+  loginModal.classList.remove("hidden");
 });
 
 function closeLogin() {
-  loginModal.classList.add('hidden');
+  loginModal.classList.add("hidden");
 }
 
 function submitLogin() {
   const username = usernameInput.value.trim();
   if (username) {
-    localStorage.setItem('username', username);
+    localStorage.setItem("username", username);
     alert(`Welcome, ${username}!`);
     closeLogin();
     showLoggedInUser();
@@ -186,52 +182,50 @@ function submitLogin() {
 }
 
 function showLoggedInUser() {
-  const username = localStorage.getItem('username');
-  const userDisplay = document.getElementById('userDisplay');
+  const username = localStorage.getItem("username");
+  const userDisplay = document.getElementById("userDisplay");
   if (username) {
     userDisplay.textContent = `👋 Hello, ${username}`;
-    userDisplay.classList.remove('hidden');
+    userDisplay.classList.remove("hidden");
   } else {
-    userDisplay.classList.add('hidden');
+    userDisplay.classList.add("hidden");
   }
 }
 
 // === SPA Navigation ===
-const hamburgerBtn = document.getElementById('hamburgerBtn');
-const navMenu = document.getElementById('navMenu');
+const hamburgerBtn = document.getElementById("hamburgerBtn");
+const navMenu = document.getElementById("navMenu");
 
-hamburgerBtn?.addEventListener('click', () => {
-  navMenu.classList.toggle('open');
+hamburgerBtn?.addEventListener("click", () => {
+  navMenu.classList.toggle("open");
 });
 
-const navLinks = document.querySelectorAll('.navbar-links a');
-const sections = document.querySelectorAll('main > section');
+const navLinks = document.querySelectorAll(".navbar-links a");
+const sections = document.querySelectorAll("main > section");
 
 function showSection(sectionId) {
-  sections.forEach(section => {
-    section.classList.remove('active-section');
-  });
-  const targetSection = document.getElementById(sectionId);
-  if (targetSection) {
-    targetSection.classList.add('active-section');
-  }
+  sections.forEach(section => section.classList.remove("active-section"));
+  const target = document.getElementById(sectionId);
+  if (target) target.classList.add("active-section");
+
   navLinks.forEach(link => {
-    link.classList.toggle('active-link', link.getAttribute('href') === `#${sectionId}`);
+    link.classList.toggle("active-link", link.getAttribute("href") === `#${sectionId}`);
   });
-  localStorage.setItem('lastSection', sectionId);
+
+  localStorage.setItem("lastSection", sectionId);
 }
 
 navLinks.forEach(link => {
-  link.addEventListener('click', e => {
+  link.addEventListener("click", e => {
     e.preventDefault();
-    const id = link.getAttribute('href').substring(1);
+    const id = link.getAttribute("href").substring(1);
     showSection(id);
   });
 });
 
-// === On Page Load ===
-document.addEventListener('DOMContentLoaded', () => {
-  const savedSection = localStorage.getItem('lastSection') || 'home';
+// === Page Load ===
+document.addEventListener("DOMContentLoaded", () => {
+  const savedSection = localStorage.getItem("lastSection") || "home";
   showSection(savedSection);
 
   const savedTheme = localStorage.getItem("theme");
@@ -241,11 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   showLoggedInUser();
-  renderList(staticManhwa, 'popular-list');
+  renderList(staticManhwa, "popular-list");
   renderLibrary();
 });
-
-
-
-
-
