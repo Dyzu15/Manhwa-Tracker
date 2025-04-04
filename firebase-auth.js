@@ -13,13 +13,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// === DOM Elements ===
+// === UI Elements ===
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 const loginModal = document.getElementById('loginModal');
 const userDisplay = document.getElementById('userDisplay');
 
-// === Login With Google ===
+// === Google Sign In ===
 function loginWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
@@ -27,17 +27,17 @@ function loginWithGoogle() {
       closeLogin();
     })
     .catch(error => {
-      console.error("Login error:", error);
+      console.error("Login Error:", error);
       alert("Login failed.");
     });
 }
 
 // === Logout ===
-logoutBtn?.addEventListener('click', () => {
+logoutBtn.addEventListener('click', () => {
   auth.signOut();
 });
 
-// === Toggle UI based on Auth State ===
+// === Auth UI Updates ===
 auth.onAuthStateChanged(user => {
   if (user) {
     loginBtn.classList.add('hidden');
@@ -51,12 +51,12 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// === Open Login Modal ===
-loginBtn?.addEventListener('click', () => {
+// === Modal Toggle ===
+loginBtn.addEventListener('click', () => {
   loginModal.classList.remove('hidden');
 });
 
-// === Close Login Modal ===
 function closeLogin() {
   loginModal.classList.add('hidden');
 }
+
