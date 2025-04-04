@@ -1,46 +1,46 @@
 let fetchedManhwa = [];
 
-// === Fetch Real Manhwa from MangaDex API ===
-async function fetchManhwaFromAPI() {
-  const proxy = "https://corsproxy.io/?";
-  const apiUrl = "https://api.mangadex.org/manga?limit=20&includedTags[]=e197df38-a02b-4c30-9c14-35c3d7535285&contentRating[]=safe&includes[]=cover_art";
-  const url = proxy + encodeURIComponent(apiUrl);
+// === Static Manhwa Data (Offline Mode) ===
+function fetchManhwaFromAPI() {
+  fetchedManhwa = [
+    {
+      id: "1",
+      title: "Solo Leveling",
+      chapter: 55,
+      genre: "Action",
+      cover: "https://upload.wikimedia.org/wikipedia/en/thumb/f/fd/Solo_Leveling_webtoon_cover.jpg/220px-Solo_Leveling_webtoon_cover.jpg",
+      description: "A weak hunter becomes unstoppable."
+    },
+    {
+      id: "2",
+      title: "Omniscient Reader",
+      chapter: 21,
+      genre: "Fantasy",
+      cover: "https://m.media-amazon.com/images/I/71F1cnZ6GPL._AC_UF1000,1000_QL80_.jpg",
+      description: "A reader wakes up inside the web novel he was reading."
+    },
+    {
+      id: "3",
+      title: "Tower of God",
+      chapter: 134,
+      genre: "Drama",
+      cover: "https://upload.wikimedia.org/wikipedia/en/9/9a/Tower_of_God_cover.png",
+      description: "A boy enters a mysterious tower to find a friend."
+    },
+    {
+      id: "4",
+      title: "The Beginning After the End",
+      chapter: 78,
+      genre: "Fantasy",
+      cover: "https://m.media-amazon.com/images/I/71yWcWlp8tL.jpg",
+      description: "A king is reincarnated into a world of magic and monsters."
+    }
+  ];
 
-  try {
-    console.log("📡 Fetching manhwa data...");
-    const res = await fetch(url);
-    const json = await res.json();
-
-    const formatted = json.data.map(manga => {
-      const title = manga.attributes.title?.en || Object.values(manga.attributes.title)[0] || "Untitled";
-      const description = manga.attributes.description?.en || "No description.";
-      const id = manga.id;
-      const tags = manga.attributes.tags;
-      const genreTag = tags.find(tag => tag.attributes.name?.en);
-      const genre = genreTag ? genreTag.attributes.name.en : "Unknown";
-
-      const coverRel = manga.relationships.find(rel => rel.type === "cover_art");
-      const coverFile = coverRel?.attributes?.fileName || "placeholder.png";
-      const coverUrl = `https://uploads.mangadex.org/covers/${id}/${coverFile}`;
-
-      return {
-        id,
-        title,
-        chapter: 1,
-        genre,
-        cover: coverUrl,
-        description
-      };
-    });
-
-    fetchedManhwa = formatted;
-    console.log("✅ Manhwa fetched:", formatted.length);
-    renderList(fetchedManhwa, 'popular-list');
-  } catch (error) {
-    console.error("❌ Failed to fetch manhwa:", error);
-  }
+  renderList(fetchedManhwa, 'popular-list');
 }
 
+// === Bookmarks ===
 function getBookmarks() {
   return JSON.parse(localStorage.getItem("bookmarks") || "[]");
 }
@@ -60,6 +60,7 @@ function isBookmarked(id) {
   return getBookmarks().includes(id);
 }
 
+// === Read Progress ===
 function toggleRead(id) {
   const isRead = localStorage.getItem(id) === "read";
   if (isRead) {
@@ -70,6 +71,7 @@ function toggleRead(id) {
   renderLibrary();
 }
 
+// === Update Status ===
 function updateStatus(id, newStatus) {
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
   statusMap[id] = newStatus;
@@ -82,6 +84,7 @@ function getStatus(id) {
   return statusMap[id] || null;
 }
 
+// === Render Cards ===
 function renderList(data, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = "";
@@ -122,10 +125,12 @@ function renderList(data, containerId) {
   });
 }
 
+// === Genre Filter ===
 document.getElementById('genreFilter').addEventListener('change', () => {
   renderList(fetchedManhwa, 'popular-list');
 });
 
+// === My Library ===
 function renderLibrary() {
   const allCards = document.querySelectorAll('#popular-list .card');
   const bookmarked = getBookmarks();
@@ -139,6 +144,7 @@ function renderLibrary() {
   bookmarkedCards.forEach(card => libraryContainer.appendChild(card.cloneNode(true)));
 }
 
+// === Popup ===
 let currentPopupId = null;
 
 function openPopup(item) {
@@ -169,7 +175,9 @@ function saveChapterProgress() {
   }
 }
 
+// === Theme Toggle ===
 const themeToggle = document.getElementById("themeToggle");
+
 if (themeToggle) {
   themeToggle.addEventListener("change", () => {
     document.body.classList.toggle("light");
@@ -177,6 +185,7 @@ if (themeToggle) {
   });
 }
 
+// === Login Modal Logic ===
 const loginBtn = document.querySelector('.login-btn');
 const loginModal = document.getElementById('loginModal');
 const usernameInput = document.getElementById('usernameInput');
@@ -213,6 +222,7 @@ function showLoggedInUser() {
   }
 }
 
+// === SPA Navigation ===
 const hamburgerBtn = document.getElementById('hamburgerBtn');
 const navMenu = document.getElementById('navMenu');
 
@@ -224,20 +234,13 @@ const navLinks = document.querySelectorAll('.navbar-links a');
 const sections = document.querySelectorAll('main > section');
 
 function showSection(sectionId) {
-  sections.forEach(section => {
-    section.classList.remove('active-section');
-  });
-
+  sections.forEach(section => section.classList.remove('active-section'));
   const targetSection = document.getElementById(sectionId);
   if (targetSection) {
     void targetSection.offsetWidth;
     targetSection.classList.add('active-section');
   }
-
-  navLinks.forEach(link => {
-    link.classList.toggle('active-link', link.getAttribute('href') === `#${sectionId}`);
-  });
-
+  navLinks.forEach(link => link.classList.toggle('active-link', link.getAttribute('href') === `#${sectionId}`));
   localStorage.setItem('lastSection', sectionId);
 }
 
@@ -248,9 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme === "light") {
     document.body.classList.add("light");
-    if (themeToggle) {
-      themeToggle.checked = true;
-    }
+    if (themeToggle) themeToggle.checked = true;
   }
 
   showLoggedInUser();
@@ -268,11 +269,9 @@ navLinks.forEach(link => {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('service-worker.js').then(function (reg) {
-      console.log('✅ Service worker registered.', reg);
-    }).catch(function (err) {
-      console.log('❌ Service worker registration failed:', err);
-    });
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('✅ Service worker registered.', reg))
+      .catch(err => console.log('❌ Service worker registration failed:', err));
   });
 }
 
