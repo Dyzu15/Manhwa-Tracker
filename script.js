@@ -5,18 +5,20 @@ async function fetchManhwaFromAPI() {
   const url = "https://api.mangadex.org/manga?limit=20&includedTags[]=e197df38-a02b-4c30-9c14-35c3d7535285&contentRating[]=safe&includes[]=cover_art";
 
   try {
+    console.log("📡 Fetching from MangaDex...");
     const res = await fetch(url);
     const json = await res.json();
 
     const formatted = json.data.map(manga => {
-      const title = manga.attributes.title.en || "Untitled";
-      const description = manga.attributes.description.en || "No description.";
+      const title = manga.attributes.title?.en || Object.values(manga.attributes.title)[0] || "Untitled";
+      const description = manga.attributes.description?.en || "No description.";
       const id = manga.id;
-      const genreTag = manga.attributes.tags.find(tag => tag.attributes.name?.en);
+      const tags = manga.attributes.tags;
+      const genreTag = tags.find(tag => tag.attributes.name?.en);
       const genre = genreTag ? genreTag.attributes.name.en : "Unknown";
 
       const coverRel = manga.relationships.find(rel => rel.type === "cover_art");
-      const coverFile = coverRel ? coverRel.attributes.fileName : "default.jpg";
+      const coverFile = coverRel?.attributes?.fileName || "placeholder.png";
       const coverUrl = `https://uploads.mangadex.org/covers/${id}/${coverFile}`;
 
       return {
@@ -30,9 +32,10 @@ async function fetchManhwaFromAPI() {
     });
 
     fetchedManhwa = formatted;
+    console.log("✅ Rendered:", formatted.length, "manhwa");
     renderList(fetchedManhwa, 'popular-list');
   } catch (error) {
-    console.error("Failed to fetch manhwa:", error);
+    console.error("❌ Failed to fetch manhwa:", error);
   }
 }
 
@@ -98,7 +101,7 @@ function renderList(data, containerId) {
     card.className = 'card';
 
     card.innerHTML = `
-      <img src="${item.cover}" alt="${item.title}" onclick='openPopup(${JSON.stringify(item)})'>
+      <img src="${item.cover}" alt="${item.title}" onerror="this.src='./fallback.jpg'">
       <h3>${item.title}</h3>
       <p>Chapter ${savedChapter}</p>
       <button onclick="toggleRead('${item.id}')">
@@ -121,7 +124,7 @@ function renderList(data, containerId) {
   });
 }
 
-// === Genre Filter (now filters from cached data) ===
+// === Genre Filter ===
 document.getElementById('genreFilter').addEventListener('change', () => {
   renderList(fetchedManhwa, 'popular-list');
 });
@@ -284,7 +287,6 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
-
 
 
 
