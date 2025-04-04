@@ -115,7 +115,7 @@ function renderList(data, containerId) {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
-      <img src="${item.cover}" alt="${item.title}" />
+      <img src="${item.cover}" alt="${item.title}" class="cover-image" />
       <h3>${item.title}</h3>
       <p>Chapter ${savedChapter}</p>
       <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
