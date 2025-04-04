@@ -26,7 +26,7 @@ const staticManhwa = [
   }
 ];
 
-// === Bookmarks ===
+// === Bookmarks / Read Status / Status ===
 function getBookmarks() {
   return JSON.parse(localStorage.getItem("bookmarks") || "[]");
 }
@@ -36,7 +36,6 @@ function toggleBookmark(id) {
   bookmarks = bookmarks.includes(id)
     ? bookmarks.filter(b => b !== id)
     : [...bookmarks, id];
-
   localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
   renderLibrary();
 }
@@ -45,24 +44,17 @@ function isBookmarked(id) {
   return getBookmarks().includes(id);
 }
 
-// === Read Progress ===
 function toggleRead(id) {
   const isRead = localStorage.getItem(id) === "read";
   isRead ? localStorage.removeItem(id) : localStorage.setItem(id, "read");
   renderLibrary();
 }
 
-// === Status ===
 function updateStatus(id, newStatus) {
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
   statusMap[id] = newStatus;
   localStorage.setItem("statuses", JSON.stringify(statusMap));
   renderLibrary();
-}
-
-function getStatus(id) {
-  const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
-  return statusMap[id] || null;
 }
 
 // === Render Cards ===
@@ -147,59 +139,7 @@ function saveChapterProgress() {
   }
 }
 
-// === Theme Toggle ===
-const themeToggle = document.getElementById("themeToggle");
-if (themeToggle) {
-  themeToggle.addEventListener("change", () => {
-    document.body.classList.toggle("light");
-    localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
-  });
-}
-
-// === Login Modal ===
-const loginBtn = document.querySelector(".login-btn");
-const loginModal = document.getElementById("loginModal");
-const usernameInput = document.getElementById("usernameInput");
-
-loginBtn?.addEventListener("click", () => {
-  loginModal.classList.remove("hidden");
-});
-
-function closeLogin() {
-  loginModal.classList.add("hidden");
-}
-
-function submitLogin() {
-  const username = usernameInput.value.trim();
-  if (username) {
-    localStorage.setItem("username", username);
-    alert(`Welcome, ${username}!`);
-    closeLogin();
-    showLoggedInUser();
-  } else {
-    alert("Please enter your name.");
-  }
-}
-
-function showLoggedInUser() {
-  const username = localStorage.getItem("username");
-  const userDisplay = document.getElementById("userDisplay");
-  if (username) {
-    userDisplay.textContent = `👋 Hello, ${username}`;
-    userDisplay.classList.remove("hidden");
-  } else {
-    userDisplay.classList.add("hidden");
-  }
-}
-
 // === SPA Navigation ===
-const hamburgerBtn = document.getElementById("hamburgerBtn");
-const navMenu = document.getElementById("navMenu");
-
-hamburgerBtn?.addEventListener("click", () => {
-  navMenu.classList.toggle("open");
-});
-
 const navLinks = document.querySelectorAll(".navbar-links a");
 const sections = document.querySelectorAll("main > section");
 
@@ -223,7 +163,23 @@ navLinks.forEach(link => {
   });
 });
 
-// === Page Load ===
+// === Hamburger Menu ===
+const hamburgerBtn = document.getElementById("hamburgerBtn");
+const navMenu = document.getElementById("navMenu");
+hamburgerBtn?.addEventListener("click", () => {
+  navMenu.classList.toggle("open");
+});
+
+// === Theme Toggle ===
+const themeToggle = document.getElementById("themeToggle");
+if (themeToggle) {
+  themeToggle.addEventListener("change", () => {
+    document.body.classList.toggle("light");
+    localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+  });
+}
+
+// === On Load ===
 document.addEventListener("DOMContentLoaded", () => {
   const savedSection = localStorage.getItem("lastSection") || "home";
   showSection(savedSection);
@@ -234,7 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (themeToggle) themeToggle.checked = true;
   }
 
-  showLoggedInUser();
   renderList(staticManhwa, "popular-list");
   renderLibrary();
 });
