@@ -1,124 +1,42 @@
-const manhwaData = {
-  currentlyReading: [
-    {
-      id: "solo_leveling",
-      title: "Solo Leveling",
-      chapter: "125",
-      genre: "Action",
-      cover: "https://i.imgur.com/KyXbRXK.jpg",
-      description: "A weak E-rank hunter discovers a mysterious system that allows him to grow stronger."
-    },
-    {
-      id: "omniscient_reader",
-      title: "Omniscient Reader",
-      chapter: "102",
-      genre: "Fantasy",
-      cover: "https://i.imgur.com/0JcCqvx.jpg",
-      description: "A reader is thrust into his favorite webnovel world — and he's the only one who knows how it ends."
-    },
-    {
-      id: "second_life_ranker",
-      title: "Second Life Ranker",
-      chapter: "145",
-      genre: "Action",
-      cover: "https://i.imgur.com/D5WlfBr.jpg",
-      description: "A man enters a mysterious tower to avenge his brother and claim his destiny."
-    }
-  ],
-  popular: [
-    {
-      id: "tower_of_god",
-      title: "Tower of God",
-      chapter: "514",
-      genre: "Fantasy",
-      cover: "https://i.imgur.com/s7qI1RW.jpg",
-      description: "A boy climbs a dangerous tower to reunite with his best friend."
-    },
-    {
-      id: "the_boxer",
-      title: "The Boxer",
-      chapter: "76",
-      genre: "Drama",
-      cover: "https://i.imgur.com/WxRLdkk.jpg",
-      description: "A cold, empty prodigy boxer fights with nothing to lose and everything to prove."
-    },
-    {
-      id: "lookism",
-      title: "Lookism",
-      chapter: "440",
-      genre: "Drama",
-      cover: "https://i.imgur.com/3gFLs0e.jpg",
-      description: "A bullied student wakes up in a new, handsome body — and begins living a double life."
-    },
-    {
-      id: "weak_hero",
-      title: "Weak Hero",
-      chapter: "250",
-      genre: "Action",
-      cover: "https://i.imgur.com/VuZQYdn.jpg",
-      description: "A seemingly weak boy with a sharp brain becomes the school’s most feared fighter."
-    },
-    {
-      id: "unordinary",
-      title: "Unordinary",
-      chapter: "310",
-      genre: "Supernatural",
-      cover: "https://i.imgur.com/Gcnemht.jpg",
-      description: "In a world where everyone has powers, one powerless boy hides a dark secret."
-    }
-  ],
-  newReleases: [
-    {
-      id: "viral_hit",
-      title: "Viral Hit",
-      chapter: "80",
-      genre: "Action",
-      cover: "https://i.imgur.com/kZplb1D.jpg",
-      description: "A shy student learns street fighting from a YouTube channel — and becomes a viral sensation."
-    },
-    {
-      id: "eleceed",
-      title: "Eleceed",
-      chapter: "242",
-      genre: "Comedy",
-      cover: "https://i.imgur.com/dqGn0Wz.jpg",
-      description: "A lightning-fast boy and a sassy cat fight evil in this heartwarming supernatural tale."
-    },
-    {
-      id: "manager_kim",
-      title: "Manager Kim",
-      chapter: "91",
-      genre: "Action",
-      cover: "https://i.imgur.com/GSmP4h1.jpg",
-      description: "A peaceful manager turns into a ruthless operative to save his kidnapped daughter."
-    },
-    {
-      id: "my_s_class",
-      title: "My S-Class Hunters",
-      chapter: "79",
-      genre: "Fantasy",
-      cover: "https://i.imgur.com/gjTRbEz.jpg",
-      description: "A man returns to the past with the power to raise weak hunters into S-class legends."
-    },
-    {
-      id: "jujutsu_kaisen",
-      title: "Jujutsu Kaisen",
-      chapter: "252",
-      genre: "Supernatural",
-      cover: "https://i.imgur.com/dKyoNDv.jpg",
-      description: "A boy swallows a cursed object and joins a school of sorcerers to protect humanity."
-    },
-    {
-      id: "nano_machine",
-      title: "Nano Machine",
-      chapter: "180",
-      genre: "Martial Arts",
-      cover: "https://i.imgur.com/6bfedh5.jpg",
-      description: "A rejected prince is injected with future nano-tech and revolutionizes martial arts."
-    }
-  ]
-};
+// === Global Store for API Data ===
+let fetchedManhwa = [];
 
+// === Fetch Real Manhwa from MangaDex API ===
+async function fetchManhwaFromAPI() {
+  const proxy = "https://cors-anywhere.herokuapp.com/";
+  const url = proxy + "https://api.mangadex.org/manga?limit=20&includedTags[]=e197df38-a02b-4c30-9c14-35c3d7535285&contentRating[]=safe&includes[]=cover_art";
+
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+
+    const formatted = json.data.map(manga => {
+      const title = manga.attributes.title.en || "Untitled";
+      const description = manga.attributes.description.en || "No description.";
+      const id = manga.id;
+      const genreTag = manga.attributes.tags.find(tag => tag.attributes.name?.en);
+      const genre = genreTag ? genreTag.attributes.name.en : "Unknown";
+
+      const coverRel = manga.relationships.find(rel => rel.type === "cover_art");
+      const coverFile = coverRel ? coverRel.attributes.fileName : "default.jpg";
+      const coverUrl = `https://uploads.mangadex.org/covers/${id}/${coverFile}`;
+
+      return {
+        id,
+        title,
+        chapter: 1,
+        genre,
+        cover: coverUrl,
+        description
+      };
+    });
+
+    fetchedManhwa = formatted; // Cache the data
+    renderList(fetchedManhwa, 'popular-list');
+  } catch (error) {
+    console.error("Failed to fetch manhwa:", error);
+  }
+}
 
 // === Bookmarks ===
 function getBookmarks() {
@@ -133,7 +51,7 @@ function toggleBookmark(id) {
     bookmarks.push(id);
   }
   localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-  renderAllSections(); // Refresh UI
+  renderLibrary();
 }
 
 function isBookmarked(id) {
@@ -146,20 +64,32 @@ function toggleRead(id) {
   if (isRead) {
     localStorage.removeItem(id);
   } else {
-    localStorage.setItem(id, "read", "read");
+    localStorage.setItem(id, "read");
   }
-  renderAllSections();
+  renderLibrary();
+}
+
+// === Update Status ===
+function updateStatus(id, newStatus) {
+  const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
+  statusMap[id] = newStatus;
+  localStorage.setItem("statuses", JSON.stringify(statusMap));
+  renderLibrary();
+}
+
+function getStatus(id) {
+  const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
+  return statusMap[id] || null;
 }
 
 // === Render Cards ===
 function renderList(data, containerId) {
   const container = document.getElementById(containerId);
-  container.innerHTML = ""; // Clear container
+  container.innerHTML = "";
 
   const selectedGenre = document.getElementById("genreFilter")?.value || "all";
 
   data.forEach(item => {
-    // Filter by genre
     if (selectedGenre !== "all" && item.genre !== selectedGenre) return;
 
     const isRead = localStorage.getItem(item.id) === "read";
@@ -179,52 +109,40 @@ function renderList(data, containerId) {
       <button onclick="toggleBookmark('${item.id}')">
         ${bookmarked ? "⭐ Bookmarked" : "☆ Add to Library"}
       </button>
+      <select onchange="updateStatus('${item.id}', this.value)">
+        <option value="">📂 Set Status</option>
+        <option value="reading">📖 Reading</option>
+        <option value="completed">🏁 Completed</option>
+        <option value="on_hold">⌛ On Hold</option>
+        <option value="dropped">❌ Dropped</option>
+        <option value="wishlist">💭 Wishlist</option>
+      </select>
     `;
 
     container.appendChild(card);
   });
 }
 
-// === Search Function ===
-document.getElementById('searchInput').addEventListener('input', function (e) {
-  const keyword = e.target.value.toLowerCase();
-
-  function filterList(list) {
-    return list.filter(item => item.title.toLowerCase().includes(keyword));
-  }
-
-  renderList(filterList(manhwaData.currentlyReading), 'currently-reading');
-  renderList(filterList(manhwaData.popular), 'popular-series');
-  renderList(filterList(manhwaData.newReleases), 'new-releases');
-  renderLibrary();
-});
-
-// === Genre Filter ===
+// === Genre Filter (now uses cached data) ===
 document.getElementById('genreFilter').addEventListener('change', () => {
-  renderAllSections();
+  renderList(fetchedManhwa, 'popular-list');
 });
 
-// === Render All Sections ===
-function renderAllSections() {
-  renderList(manhwaData.currentlyReading, 'currently-reading');
-  renderList(manhwaData.popular, 'popular-series');
-  renderList(manhwaData.newReleases, 'new-releases');
-  renderLibrary();
-}
-
-// === Render My Library Section ===
+// === My Library ===
 function renderLibrary() {
-  const all = [
-    ...manhwaData.currentlyReading,
-    ...manhwaData.popular,
-    ...manhwaData.newReleases
-  ];
+  const allCards = document.querySelectorAll('#popular-list .card');
   const bookmarked = getBookmarks();
-  const filtered = all.filter(item => bookmarked.includes(item.id));
-  renderList(filtered, 'my-library');
+
+  const bookmarkedCards = Array.from(allCards).filter(card =>
+    bookmarked.includes(card.querySelector('button[onclick^="toggleRead"]').getAttribute('onclick').match(/'(.+)'/)[1])
+  );
+
+  const libraryContainer = document.getElementById('my-library');
+  libraryContainer.innerHTML = '';
+  bookmarkedCards.forEach(card => libraryContainer.appendChild(card.cloneNode(true)));
 }
 
-// === Modal Popup ===
+// === Popup ===
 let currentPopupId = null;
 
 function openPopup(item) {
@@ -245,36 +163,120 @@ function closePopup() {
   document.getElementById("popupOverlay").classList.add("hidden");
 }
 
-// === Save Chapter Progress ===
 function saveChapterProgress() {
   const newChapter = document.getElementById("chapterInput").value;
   if (currentPopupId && newChapter) {
     localStorage.setItem(`chapter_${currentPopupId}`, newChapter);
     closePopup();
-    renderAllSections(); // Refresh UI
+    renderList(fetchedManhwa, 'popular-list');
+    renderLibrary();
   }
 }
 
 // === Theme Toggle ===
 const themeToggle = document.getElementById("themeToggle");
 
-themeToggle.addEventListener("change", () => {
-  document.body.classList.toggle("light");
-  localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+if (themeToggle) {
+  themeToggle.addEventListener("change", () => {
+    document.body.classList.toggle("light");
+    localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+  });
+}
+
+// === Login Modal Logic ===
+const loginBtn = document.querySelector('.login-btn');
+const loginModal = document.getElementById('loginModal');
+const usernameInput = document.getElementById('usernameInput');
+
+loginBtn.addEventListener('click', () => {
+  loginModal.classList.remove('hidden');
 });
 
-// === Load Saved Theme ===
-window.addEventListener("DOMContentLoaded", () => {
+function closeLogin() {
+  loginModal.classList.add('hidden');
+}
+
+function submitLogin() {
+  const username = usernameInput.value.trim();
+  if (username) {
+    localStorage.setItem('username', username);
+    alert(`Welcome, ${username}!`);
+    closeLogin();
+    showLoggedInUser();
+  } else {
+    alert("Please enter your name.");
+  }
+}
+
+function showLoggedInUser() {
+  const username = localStorage.getItem('username');
+  const userDisplay = document.getElementById('userDisplay');
+
+  if (username) {
+    userDisplay.textContent = `👋 Hello, ${username}`;
+    userDisplay.classList.remove('hidden');
+  } else {
+    userDisplay.classList.add('hidden');
+  }
+}
+
+// === SPA-style Section Navigation ===
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const navMenu = document.getElementById('navMenu');
+
+hamburgerBtn.addEventListener('click', () => {
+  navMenu.classList.toggle('open');
+});
+
+const navLinks = document.querySelectorAll('.navbar-links a');
+const sections = document.querySelectorAll('main > section');
+
+function showSection(sectionId) {
+  sections.forEach(section => {
+    section.classList.remove('active-section');
+  });
+
+  const targetSection = document.getElementById(sectionId);
+  if (targetSection) {
+    void targetSection.offsetWidth;
+    targetSection.classList.add('active-section');
+  }
+
+  navLinks.forEach(link => {
+    link.classList.toggle('active-link', link.getAttribute('href') === `#${sectionId}`);
+  });
+
+  localStorage.setItem('lastSection', sectionId);
+}
+
+// === On Page Load ===
+document.addEventListener('DOMContentLoaded', () => {
+  const savedSection = localStorage.getItem('lastSection') || 'home';
+  showSection(savedSection);
+
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme === "light") {
     document.body.classList.add("light");
-    themeToggle.checked = true;
+    if (themeToggle) {
+      themeToggle.checked = true;
+    }
   }
 
-  renderAllSections();
+  showLoggedInUser();
+  fetchManhwaFromAPI(); // Load real data once
+  renderLibrary();
 });
 
-// === PWA: Register Service Worker ===
+// Attach section switching
+navLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const targetId = link.getAttribute('href').substring(1);
+    showSection(targetId);
+  });
+});
+
+// === Service Worker ===
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('service-worker.js').then(function (reg) {
@@ -284,9 +286,6 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
-
-
-
 
 
 
