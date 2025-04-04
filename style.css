@@ -16,12 +16,14 @@ header {
   z-index: 2;
 }
 
+/* ✅ Fixed Logo Styling */
 .logo {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  vertical-align: middle;
-  margin-right: 10px;
+  max-width: 550px;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  display: block;
+  margin: 0 auto 10px;
 }
 
 header input[type="text"] {
@@ -52,12 +54,12 @@ h2 {
   gap: 16px;
   overflow-x: auto;
   padding: 10px 0;
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .card-list::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;
 }
 
 .card {
@@ -127,7 +129,7 @@ footer {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('background.jpg'); /* Make sure this matches your actual image name */
+  background-image: url('background.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -279,10 +281,11 @@ footer {
     font-size: 20px;
   }
 
-  .logo {
+  /* ✅ Removed logo shrink override */
+  /* .logo {
     width: 40px;
     height: 40px;
-  }
+  } */
 
   .card {
     width: 140px;
@@ -373,4 +376,5 @@ body.light #genreFilter {
   color: #000;
   border: 1px solid #ccc;
 }
+
 
