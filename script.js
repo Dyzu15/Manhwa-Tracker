@@ -1,30 +1,16 @@
-// === Static Manhwa Data ===
-const staticManhwa = [
-  {
-    id: "solo-leveling",
-    title: "Solo Leveling",
-    chapter: 1,
-    genre: "Fantasy",
-    cover: "https://i.imgur.com/8QKj7cV.jpg",
-    description: "The world's weakest hunter gets a powerful second chance."
-  },
-  {
-    id: "tower-of-god",
-    title: "Tower of God",
-    chapter: 1,
-    genre: "Action",
-    cover: "https://i.imgur.com/XStvXEF.jpg",
-    description: "A boy enters a mysterious tower to find his friend."
-  },
-  {
-    id: "lookism",
-    title: "Lookism",
-    chapter: 1,
-    genre: "Drama",
-    cover: "https://i.imgur.com/l9QvVd5.jpg",
-    description: "A high schooler wakes up in the body of a model overnight."
-  }
-];
+// === Firebase Setup ===
+const firebaseConfig = {
+  apiKey: "AIzaSyCVZSmhs1Bz8pHa6e5w-0p1lGsdGgFqWWI",
+  authDomain: "manhwa-tracker-701f9.firebaseapp.com",
+  projectId: "manhwa-tracker-701f9",
+  storageBucket: "manhwa-tracker-701f9.firebasestorage.app",
+  messagingSenderId: "775288113585",
+  appId: "1:775288113585:web:5094032a41980a662e1590",
+  measurementId: "G-LFESV3X9JX"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // === SPA Navigation ===
 const hamburgerBtn = document.getElementById("hamburgerBtn");
@@ -162,18 +148,24 @@ function renderList(data, containerId) {
   });
 }
 
-// === Combined Render ===
-function renderAll() {
+// === Firebase Fetch + Render ===
+async function fetchManhwaFromFirebase() {
+  const snapshot = await db.collection("manhwa").get();
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+async function renderAll() {
   const bookmarked = getBookmarks();
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
+  const manhwaList = await fetchManhwaFromFirebase();
 
-  renderList(staticManhwa, "currently-reading");
-  renderList(staticManhwa, "popular-list");
-  renderList(staticManhwa.filter(m => bookmarked.includes(m.id)), "my-library");
-  renderList(staticManhwa.filter(m => statusMap[m.id] === "completed"), "status-completed");
-  renderList(staticManhwa.filter(m => statusMap[m.id] === "on_hold"), "status-onhold");
-  renderList(staticManhwa.filter(m => statusMap[m.id] === "dropped"), "status-dropped");
-  renderList(staticManhwa.filter(m => statusMap[m.id] === "wishlist"), "status-wishlist");
+  renderList(manhwaList, "currently-reading");
+  renderList(manhwaList, "popular-list");
+  renderList(manhwaList.filter(m => bookmarked.includes(m.id)), "my-library");
+  renderList(manhwaList.filter(m => statusMap[m.id] === "completed"), "status-completed");
+  renderList(manhwaList.filter(m => statusMap[m.id] === "on_hold"), "status-onhold");
+  renderList(manhwaList.filter(m => statusMap[m.id] === "dropped"), "status-dropped");
+  renderList(manhwaList.filter(m => statusMap[m.id] === "wishlist"), "status-wishlist");
 }
 
 // === Search & Genre Events ===
@@ -217,15 +209,11 @@ document.addEventListener("DOMContentLoaded", () => {
   showLoggedInUser();
   renderAll();
 
-  // Add fade-in effect for images after rendering
   setTimeout(() => {
     document.querySelectorAll('.card img').forEach(img => {
-      img.addEventListener('load', () => {
-        img.classList.add('loaded');
-      });
-      if (img.complete) {
-        img.classList.add('loaded');
-      }
+      img.addEventListener('load', () => img.classList.add('loaded'));
+      if (img.complete) img.classList.add('loaded');
     });
   }, 100);
 });
+
