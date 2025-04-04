@@ -12,6 +12,9 @@
       scroll-behavior: smooth;
     }
   </style>
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 </head>
 <body>
   <div class="background-overlay"></div>
@@ -35,7 +38,8 @@
 
     <div class="navbar-right">
       <input type="text" id="searchInput" placeholder="Search series..." />
-      <button class="login-btn">Login</button>
+      <button class="login-btn" id="loginBtn">Login</button>
+      <button class="hidden" id="logoutBtn">Logout</button>
       <span id="userDisplay" class="user-display hidden"></span>
     </div>
   </header>
@@ -53,7 +57,6 @@
   </div>
 
   <main>
-    <!-- ✅ Added class="active-section" -->
     <section id="home" class="active-section">
       <h2>Currently Reading</h2>
       <div class="card-list" id="currently-reading"></div>
@@ -113,19 +116,19 @@
     </div>
   </div>
 
-  <!-- === Login Modal Popup === -->
+  <!-- === Firebase Auth Modal (real login) === -->
   <div id="loginModal" class="popup-overlay hidden">
     <div class="popup">
       <span class="close-btn" onclick="closeLogin()">×</span>
-      <h3>Login</h3>
-      <input type="text" id="usernameInput" placeholder="Enter your name" />
-      <button onclick="submitLogin()">Continue</button>
+      <h3>Login with Google</h3>
+      <button onclick="loginWithGoogle()">Sign in with Google</button>
     </div>
   </div>
 
+  <!-- === Script Includes === -->
   <script src="./script.js"></script>
+  <script src="./firebase-auth.js"></script>
   <script>
-    // Auto-close hamburger menu when clicking a nav link (mobile)
     document.querySelectorAll('#navMenu a').forEach(link => {
       link.addEventListener('click', () => {
         document.getElementById('navMenu').classList.remove('open');
