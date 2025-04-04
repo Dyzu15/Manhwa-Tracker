@@ -2,29 +2,42 @@
 <html lang="en">
 <head>
   <meta name="description" content="Track your favorite manhwa series with bookmarks, reading progress, and latest chapters.">
-<meta name="theme-color" content="#121212" />
+  <meta name="theme-color" content="#121212" />
   <title>Manhwa Tracker</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" href="dyz-logo.png">
   <link rel="manifest" href="manifest.json">
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
 </head>
 <body>
   <div class="background-overlay"></div>
 
-  <header style="text-align: center;">
-    <!-- ✅ Logo enlarged to 550px -->
-    <img src="dyz-logo.png" alt="Manhwa Tracker Logo" class="logo" style="max-width: 550px; height: auto; display: block; margin: 0 auto 10px;" />
-    
-    <!-- ✅ Title without emoji -->
-    <h1>Manhwa Tracker</h1>
+  <!-- ✅ Top Navigation Bar -->
+  <header class="navbar">
+    <div class="navbar-left">
+      <img src="dyz-logo.png" alt="Manhwa Tracker Logo" class="logo-small" />
+      <span class="site-title">Manhwa Tracker</span>
+    </div>
 
-    <input type="text" id="searchInput" placeholder="Search series..." />
+    <div class="navbar-center">
+      <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+      <nav class="navbar-links" id="navMenu">
+        <a href="#home">Home</a>
+        <a href="#my-library">My List</a>
+        <a href="#popular">Popular</a>
+        <a href="#new">New Releases</a>
+      </nav>
+    </div>
 
-    <!-- 🌗 Light/Dark Mode Toggle -->
-    <label class="theme-toggle">
-      <input type="checkbox" id="themeToggle">
-      <span>🌙 Dark Mode</span>
-    </label>
+    <div class="navbar-right">
+      <input type="text" id="searchInput" placeholder="Search series..." />
+      <button class="login-btn">Login</button>
+      <span id="userDisplay" class="user-display hidden"></span>
+    </div>
   </header>
 
   <!-- 🧩 Genre Filter -->
@@ -40,24 +53,44 @@
   </div>
 
   <main>
-    <section>
+    <section id="home">
       <h2>Currently Reading</h2>
       <div class="card-list" id="currently-reading"></div>
     </section>
 
-    <section>
+    <section id="popular">
       <h2>Popular Series</h2>
-      <div class="card-list" id="popular-series"></div>
+      <div class="card-list" id="popular-list"></div>
     </section>
 
-    <section>
+    <section id="new">
       <h2>New Releases</h2>
       <div class="card-list" id="new-releases"></div>
     </section>
-    
-    <section>
+
+    <section id="my-library">
       <h2>⭐ My Library</h2>
       <div class="card-list" id="my-library"></div>
+    </section>
+
+    <section>
+      <h2>✅ Completed</h2>
+      <div class="card-list" id="status-completed"></div>
+    </section>
+
+    <section>
+      <h2>⏸️ On Hold</h2>
+      <div class="card-list" id="status-onhold"></div>
+    </section>
+
+    <section>
+      <h2>❌ Dropped</h2>
+      <div class="card-list" id="status-dropped"></div>
+    </section>
+
+    <section>
+      <h2>📝 Wishlist</h2>
+      <div class="card-list" id="status-wishlist"></div>
     </section>
   </main>
 
@@ -72,17 +105,32 @@
       <img id="popupCover" src="" alt="Cover" />
       <h3 id="popupTitle">Title</h3>
       <p id="popupChapter">Chapter</p>
-
       <label for="chapterInput">Update Chapter:</label>
-      <input type="number" id="chapterInput" min="1" style="width: 100%; padding: 5px; margin-bottom: 10px;" />
-
+      <input type="number" id="chapterInput" min="1" />
       <button onclick="saveChapterProgress()">Save Progress</button>
-
       <p id="popupDescription">This is a placeholder synopsis. We'll update this with real text later!</p>
     </div>
   </div>
 
+  <!-- === Login Modal Popup === -->
+  <div id="loginModal" class="popup-overlay hidden">
+    <div class="popup">
+      <span class="close-btn" onclick="closeLogin()">×</span>
+      <h3>Login</h3>
+      <input type="text" id="usernameInput" placeholder="Enter your name" />
+      <button onclick="submitLogin()">Continue</button>
+    </div>
+  </div>
+
   <script src="script.js"></script>
+  <script>
+    // Auto-close hamburger menu when clicking a nav link (mobile)
+    document.querySelectorAll('#navMenu a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('navMenu').classList.remove('open');
+      });
+    });
+  </script>
 </body>
 </html>
 
