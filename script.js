@@ -2,10 +2,12 @@ let fetchedManhwa = [];
 
 // === Fetch Real Manhwa from MangaDex API ===
 async function fetchManhwaFromAPI() {
-  const url = "https://api.mangadex.org/manga?limit=20&includedTags[]=e197df38-a02b-4c30-9c14-35c3d7535285&contentRating[]=safe&includes[]=cover_art";
+  const proxy = "https://corsproxy.io/?";
+  const apiUrl = "https://api.mangadex.org/manga?limit=20&includedTags[]=e197df38-a02b-4c30-9c14-35c3d7535285&contentRating[]=safe&includes[]=cover_art";
+  const url = proxy + encodeURIComponent(apiUrl);
 
   try {
-    console.log("📡 Fetching from MangaDex...");
+    console.log("📡 Fetching manhwa data...");
     const res = await fetch(url);
     const json = await res.json();
 
@@ -32,14 +34,13 @@ async function fetchManhwaFromAPI() {
     });
 
     fetchedManhwa = formatted;
-    console.log("✅ Rendered:", formatted.length, "manhwa");
+    console.log("✅ Manhwa fetched:", formatted.length);
     renderList(fetchedManhwa, 'popular-list');
   } catch (error) {
     console.error("❌ Failed to fetch manhwa:", error);
   }
 }
 
-// === Bookmarks ===
 function getBookmarks() {
   return JSON.parse(localStorage.getItem("bookmarks") || "[]");
 }
@@ -59,7 +60,6 @@ function isBookmarked(id) {
   return getBookmarks().includes(id);
 }
 
-// === Read Progress ===
 function toggleRead(id) {
   const isRead = localStorage.getItem(id) === "read";
   if (isRead) {
@@ -70,7 +70,6 @@ function toggleRead(id) {
   renderLibrary();
 }
 
-// === Update Status ===
 function updateStatus(id, newStatus) {
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
   statusMap[id] = newStatus;
@@ -83,7 +82,6 @@ function getStatus(id) {
   return statusMap[id] || null;
 }
 
-// === Render Cards ===
 function renderList(data, containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = "";
@@ -101,7 +99,7 @@ function renderList(data, containerId) {
     card.className = 'card';
 
     card.innerHTML = `
-      <img src="${item.cover}" alt="${item.title}" onerror="this.src='./fallback.jpg'">
+      <img src="${item.cover}" alt="${item.title}" onclick='openPopup(${JSON.stringify(item)})'>
       <h3>${item.title}</h3>
       <p>Chapter ${savedChapter}</p>
       <button onclick="toggleRead('${item.id}')">
@@ -124,12 +122,10 @@ function renderList(data, containerId) {
   });
 }
 
-// === Genre Filter ===
 document.getElementById('genreFilter').addEventListener('change', () => {
   renderList(fetchedManhwa, 'popular-list');
 });
 
-// === My Library ===
 function renderLibrary() {
   const allCards = document.querySelectorAll('#popular-list .card');
   const bookmarked = getBookmarks();
@@ -143,7 +139,6 @@ function renderLibrary() {
   bookmarkedCards.forEach(card => libraryContainer.appendChild(card.cloneNode(true)));
 }
 
-// === Popup ===
 let currentPopupId = null;
 
 function openPopup(item) {
@@ -174,9 +169,7 @@ function saveChapterProgress() {
   }
 }
 
-// === Theme Toggle ===
 const themeToggle = document.getElementById("themeToggle");
-
 if (themeToggle) {
   themeToggle.addEventListener("change", () => {
     document.body.classList.toggle("light");
@@ -184,7 +177,6 @@ if (themeToggle) {
   });
 }
 
-// === Login Modal Logic ===
 const loginBtn = document.querySelector('.login-btn');
 const loginModal = document.getElementById('loginModal');
 const usernameInput = document.getElementById('usernameInput');
@@ -221,7 +213,6 @@ function showLoggedInUser() {
   }
 }
 
-// === SPA-style Section Navigation ===
 const hamburgerBtn = document.getElementById('hamburgerBtn');
 const navMenu = document.getElementById('navMenu');
 
@@ -250,7 +241,6 @@ function showSection(sectionId) {
   localStorage.setItem('lastSection', sectionId);
 }
 
-// === On Page Load ===
 document.addEventListener('DOMContentLoaded', () => {
   const savedSection = localStorage.getItem('lastSection') || 'home';
   showSection(savedSection);
@@ -268,7 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLibrary();
 });
 
-// Attach section switching
 navLinks.forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
@@ -277,7 +266,6 @@ navLinks.forEach(link => {
   });
 });
 
-// === Service Worker ===
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('service-worker.js').then(function (reg) {
