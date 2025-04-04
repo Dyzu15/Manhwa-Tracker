@@ -10,5 +10,4 @@ const firebaseConfig = {
   
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-  window.db = db;
-  
+ window.db.collection('manhwa').get()
