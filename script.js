@@ -26,7 +26,65 @@ const staticManhwa = [
   }
 ];
 
-// === Bookmarks / Read Status / Status ===
+// === SPA Navigation ===
+const hamburgerBtn = document.getElementById("hamburgerBtn");
+const navMenu = document.getElementById("navMenu");
+const navLinks = document.querySelectorAll(".navbar-links a");
+const sections = document.querySelectorAll("main > section");
+
+hamburgerBtn?.addEventListener("click", () => {
+  navMenu.classList.toggle("open");
+});
+
+function showSection(sectionId) {
+  sections.forEach(section => section.classList.remove("active-section"));
+  const target = document.getElementById(sectionId);
+  if (target) target.classList.add("active-section");
+
+  navLinks.forEach(link => {
+    link.classList.toggle("active-link", link.getAttribute("href") === `#${sectionId}`);
+  });
+
+  localStorage.setItem("lastSection", sectionId);
+}
+
+navLinks.forEach(link => {
+  link.addEventListener("click", e => {
+    e.preventDefault();
+    const id = link.getAttribute("href").substring(1);
+    showSection(id);
+  });
+});
+
+// === Popup ===
+let currentPopupId = null;
+
+function openPopup(item) {
+  currentPopupId = item.id;
+  const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
+
+  document.getElementById("popupCover").src = item.cover;
+  document.getElementById("popupTitle").textContent = item.title;
+  document.getElementById("popupChapter").textContent = `Current: Chapter ${savedChapter}`;
+  document.getElementById("chapterInput").value = savedChapter;
+  document.getElementById("popupDescription").textContent = item.description || "No description available.";
+  document.getElementById("popupOverlay").classList.remove("hidden");
+}
+
+function closePopup() {
+  document.getElementById("popupOverlay").classList.add("hidden");
+}
+
+function saveChapterProgress() {
+  const newChapter = document.getElementById("chapterInput").value;
+  if (currentPopupId && newChapter && Number(newChapter) > 0) {
+    localStorage.setItem(`chapter_${currentPopupId}`, newChapter);
+    closePopup();
+    renderAll();
+  }
+}
+
+// === Bookmarks ===
 function getBookmarks() {
   return JSON.parse(localStorage.getItem("bookmarks") || "[]");
 }
@@ -36,35 +94,47 @@ function toggleBookmark(id) {
   bookmarks = bookmarks.includes(id)
     ? bookmarks.filter(b => b !== id)
     : [...bookmarks, id];
+
   localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-  renderLibrary();
+  renderAll();
 }
 
 function isBookmarked(id) {
   return getBookmarks().includes(id);
 }
 
+// === Read Progress ===
 function toggleRead(id) {
   const isRead = localStorage.getItem(id) === "read";
   isRead ? localStorage.removeItem(id) : localStorage.setItem(id, "read");
-  renderLibrary();
+  renderAll();
 }
 
+// === Status ===
 function updateStatus(id, newStatus) {
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
   statusMap[id] = newStatus;
   localStorage.setItem("statuses", JSON.stringify(statusMap));
-  renderLibrary();
+  renderAll();
+}
+
+function getStatus(id) {
+  const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
+  return statusMap[id] || null;
 }
 
 // === Render Cards ===
 function renderList(data, containerId) {
   const container = document.getElementById(containerId);
+  if (!container) return;
   container.innerHTML = "";
 
-  const selectedGenre = document.getElementById("genreFilter")?.value || "all";
   data.forEach(item => {
-    if (selectedGenre !== "all" && item.genre !== selectedGenre) return;
+    const selectedGenre = document.getElementById("genreFilter")?.value.toLowerCase() || "all";
+    const keyword = document.getElementById("searchInput")?.value.toLowerCase() || "";
+
+    if ((selectedGenre !== "all" && item.genre.toLowerCase() !== selectedGenre) ||
+        (keyword && !item.title.toLowerCase().includes(keyword))) return;
 
     const isRead = localStorage.getItem(item.id) === "read";
     const bookmarked = isBookmarked(item.id);
@@ -91,86 +161,24 @@ function renderList(data, containerId) {
   });
 }
 
-// === Genre Filter ===
-document.getElementById("genreFilter").addEventListener("change", () => {
-  renderList(staticManhwa, "popular-list");
-});
-
-// === Search ===
-document.getElementById("searchInput").addEventListener("input", (e) => {
-  const keyword = e.target.value.toLowerCase();
-  const filtered = staticManhwa.filter(m => m.title.toLowerCase().includes(keyword));
-  renderList(filtered, "popular-list");
-});
-
-// === My Library ===
-function renderLibrary() {
+// === Combined Render ===
+function renderAll() {
   const bookmarked = getBookmarks();
-  const filtered = staticManhwa.filter(item => bookmarked.includes(item.id));
-  renderList(filtered, "my-library");
+  const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
+
+  renderList(staticManhwa, "popular-list");
+  renderList(staticManhwa.filter(m => bookmarked.includes(m.id)), "my-library");
+  renderList(staticManhwa.filter(m => statusMap[m.id] === "completed"), "status-completed");
+  renderList(staticManhwa.filter(m => statusMap[m.id] === "on_hold"), "status-onhold");
+  renderList(staticManhwa.filter(m => statusMap[m.id] === "dropped"), "status-dropped");
+  renderList(staticManhwa.filter(m => statusMap[m.id] === "wishlist"), "status-wishlist");
 }
 
-// === Popup ===
-let currentPopupId = null;
+// === Search & Genre Events ===
+document.getElementById("genreFilter").addEventListener("change", renderAll);
+document.getElementById("searchInput").addEventListener("input", renderAll);
 
-function openPopup(item) {
-  currentPopupId = item.id;
-  const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
-
-  document.getElementById("popupCover").src = item.cover;
-  document.getElementById("popupTitle").textContent = item.title;
-  document.getElementById("popupChapter").textContent = `Current: Chapter ${savedChapter}`;
-  document.getElementById("chapterInput").value = savedChapter;
-  document.getElementById("popupDescription").textContent = item.description || "No description available yet.";
-  document.getElementById("popupOverlay").classList.remove("hidden");
-}
-
-function closePopup() {
-  document.getElementById("popupOverlay").classList.add("hidden");
-}
-
-function saveChapterProgress() {
-  const newChapter = document.getElementById("chapterInput").value;
-  if (currentPopupId && newChapter && Number(newChapter) > 0) {
-    localStorage.setItem(`chapter_${currentPopupId}`, newChapter);
-    closePopup();
-    renderList(staticManhwa, "popular-list");
-    renderLibrary();
-  }
-}
-
-// === SPA Navigation ===
-const navLinks = document.querySelectorAll(".navbar-links a");
-const sections = document.querySelectorAll("main > section");
-
-function showSection(sectionId) {
-  sections.forEach(section => section.classList.remove("active-section"));
-  const target = document.getElementById(sectionId);
-  if (target) target.classList.add("active-section");
-
-  navLinks.forEach(link => {
-    link.classList.toggle("active-link", link.getAttribute("href") === `#${sectionId}`);
-  });
-
-  localStorage.setItem("lastSection", sectionId);
-}
-
-navLinks.forEach(link => {
-  link.addEventListener("click", e => {
-    e.preventDefault();
-    const id = link.getAttribute("href").substring(1);
-    showSection(id);
-  });
-});
-
-// === Hamburger Menu ===
-const hamburgerBtn = document.getElementById("hamburgerBtn");
-const navMenu = document.getElementById("navMenu");
-hamburgerBtn?.addEventListener("click", () => {
-  navMenu.classList.toggle("open");
-});
-
-// === Theme Toggle ===
+// === Theme ===
 const themeToggle = document.getElementById("themeToggle");
 if (themeToggle) {
   themeToggle.addEventListener("change", () => {
@@ -179,7 +187,21 @@ if (themeToggle) {
   });
 }
 
-// === On Load ===
+// === User Display ===
+function showLoggedInUser() {
+  const username = localStorage.getItem("username");
+  const userDisplay = document.getElementById("userDisplay");
+  if (userDisplay) {
+    if (username) {
+      userDisplay.textContent = `👋 Hello, ${username}`;
+      userDisplay.classList.remove("hidden");
+    } else {
+      userDisplay.classList.add("hidden");
+    }
+  }
+}
+
+// === Page Init ===
 document.addEventListener("DOMContentLoaded", () => {
   const savedSection = localStorage.getItem("lastSection") || "home";
   showSection(savedSection);
@@ -190,6 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (themeToggle) themeToggle.checked = true;
   }
 
-  renderList(staticManhwa, "popular-list");
-  renderLibrary();
+  showLoggedInUser();
+  renderAll();
 });
