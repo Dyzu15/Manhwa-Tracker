@@ -1,3 +1,5 @@
+// === Firebase Authentication ===
+const auth = firebase.auth();
 
 // === UI Elements ===
 const loginBtn = document.getElementById('loginBtn');
@@ -50,4 +52,3 @@ loginBtn.addEventListener('click', () => {
 function closeLogin() {
   loginModal.classList.add('hidden');
 }
-
