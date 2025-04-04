@@ -19,6 +19,11 @@ const logoutBtn = document.getElementById('logoutBtn');
 const loginModal = document.getElementById('loginModal');
 const userDisplay = document.getElementById('userDisplay');
 
+// === Secure Context Warning ===
+if (!window.isSecureContext) {
+  alert("⚠️ Google login only works in secure browsers like Chrome or Safari. Please open this site in a secure browser.");
+}
+
 // === Google Sign In ===
 function loginWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
