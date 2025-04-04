@@ -1,31 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <meta name="description" content="Track your favorite manhwa series with bookmarks, reading progress, and latest chapters.">
   <meta name="theme-color" content="#121212" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manhwa Tracker</title>
   <link rel="stylesheet" href="./style.css" />
   <link rel="icon" type="image/png" href="./dyz-logo.png" />
   <link rel="manifest" href="./manifest.json" />
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <style>
     html {
       scroll-behavior: smooth;
     }
   </style>
-  <!-- Firebase App (the core Firebase SDK) -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 </head>
 <body>
   <div class="background-overlay"></div>
 
-  <!-- ✅ Top Navigation Bar -->
+  <!-- Header -->
   <header class="navbar">
     <div class="navbar-left">
-      <img src="./dyz-logo.png" alt="Manhwa Tracker Logo" class="logo-small" />
+      <img src="./dyz-logo.png" alt="Logo" class="logo-small" />
       <span class="site-title">Manhwa Tracker</span>
     </div>
-
     <div class="navbar-center">
       <button class="hamburger-btn" id="hamburgerBtn">☰</button>
       <nav class="navbar-links" id="navMenu">
@@ -35,7 +36,6 @@
         <a href="#new">New Releases</a>
       </nav>
     </div>
-
     <div class="navbar-right">
       <input type="text" id="searchInput" placeholder="Search series..." />
       <button class="login-btn" id="loginBtn">Login</button>
@@ -44,7 +44,7 @@
     </div>
   </header>
 
-  <!-- 🧩 Genre Filter -->
+  <!-- Genre Filter -->
   <div class="filter-section">
     <label for="genreFilter">Filter by Genre:</label>
     <select id="genreFilter">
@@ -56,6 +56,7 @@
     </select>
   </div>
 
+  <!-- Main Content -->
   <main>
     <section id="home" class="active-section">
       <h2>Currently Reading</h2>
@@ -77,32 +78,18 @@
       <div class="card-list" id="my-library"></div>
     </section>
 
-    <section>
-      <h2>✅ Completed</h2>
-      <div class="card-list" id="status-completed"></div>
-    </section>
-
-    <section>
-      <h2>⏸️ On Hold</h2>
-      <div class="card-list" id="status-onhold"></div>
-    </section>
-
-    <section>
-      <h2>❌ Dropped</h2>
-      <div class="card-list" id="status-dropped"></div>
-    </section>
-
-    <section>
-      <h2>📝 Wishlist</h2>
-      <div class="card-list" id="status-wishlist"></div>
-    </section>
+    <section><h2>✅ Completed</h2><div class="card-list" id="status-completed"></div></section>
+    <section><h2>⏸️ On Hold</h2><div class="card-list" id="status-onhold"></div></section>
+    <section><h2>❌ Dropped</h2><div class="card-list" id="status-dropped"></div></section>
+    <section><h2>📝 Wishlist</h2><div class="card-list" id="status-wishlist"></div></section>
   </main>
 
+  <!-- Footer -->
   <footer>
     <p>&copy; 2025 Manhwa Tracker</p>
   </footer>
 
-  <!-- === Manhwa Detail Popup === -->
+  <!-- Popup Modal -->
   <div id="popupOverlay" class="popup-overlay hidden">
     <div class="popup">
       <span class="close-btn" onclick="closePopup()">×</span>
@@ -112,11 +99,11 @@
       <label for="chapterInput">Update Chapter:</label>
       <input type="number" id="chapterInput" min="1" />
       <button onclick="saveChapterProgress()">Save Progress</button>
-      <p id="popupDescription">This is a placeholder synopsis. We'll update this with real text later!</p>
+      <p id="popupDescription">This is a placeholder synopsis.</p>
     </div>
   </div>
 
-  <!-- === Firebase Auth Modal (real login) === -->
+  <!-- Firebase Login Modal -->
   <div id="loginModal" class="popup-overlay hidden">
     <div class="popup">
       <span class="close-btn" onclick="closeLogin()">×</span>
@@ -125,7 +112,7 @@
     </div>
   </div>
 
-  <!-- === Script Includes === -->
+  <!-- Scripts -->
   <script src="./script.js"></script>
   <script src="./firebase-auth.js"></script>
   <script>
