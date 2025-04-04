@@ -125,7 +125,7 @@ body.light #genreFilter {
 main {
   padding: 20px;
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
 h2 {
@@ -142,6 +142,7 @@ h2 {
   padding: 10px 0;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  min-height: 180px;
 }
 
 .card-list::-webkit-scrollbar {
@@ -483,6 +484,3 @@ main > section.active-section {
     padding-top: 10px;
   }
 }
-
-
-
