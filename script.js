@@ -166,6 +166,7 @@ function renderAll() {
   const bookmarked = getBookmarks();
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
 
+  renderList(staticManhwa, "currently-reading"); // ✅ <-- this is new!
   renderList(staticManhwa, "popular-list");
   renderList(staticManhwa.filter(m => bookmarked.includes(m.id)), "my-library");
   renderList(staticManhwa.filter(m => statusMap[m.id] === "completed"), "status-completed");
