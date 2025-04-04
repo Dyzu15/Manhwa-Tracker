@@ -1,10 +1,8 @@
-// === Global Store for API Data ===
 let fetchedManhwa = [];
 
 // === Fetch Real Manhwa from MangaDex API ===
 async function fetchManhwaFromAPI() {
-  const proxy = "https://cors-anywhere.herokuapp.com/";
-  const url = proxy + "https://api.mangadex.org/manga?limit=20&includedTags[]=e197df38-a02b-4c30-9c14-35c3d7535285&contentRating[]=safe&includes[]=cover_art";
+  const url = "https://api.mangadex.org/manga?limit=20&includedTags[]=e197df38-a02b-4c30-9c14-35c3d7535285&contentRating[]=safe&includes[]=cover_art";
 
   try {
     const res = await fetch(url);
@@ -31,7 +29,7 @@ async function fetchManhwaFromAPI() {
       };
     });
 
-    fetchedManhwa = formatted; // Cache the data
+    fetchedManhwa = formatted;
     renderList(fetchedManhwa, 'popular-list');
   } catch (error) {
     console.error("Failed to fetch manhwa:", error);
@@ -123,7 +121,7 @@ function renderList(data, containerId) {
   });
 }
 
-// === Genre Filter (now uses cached data) ===
+// === Genre Filter (now filters from cached data) ===
 document.getElementById('genreFilter').addEventListener('change', () => {
   renderList(fetchedManhwa, 'popular-list');
 });
@@ -263,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   showLoggedInUser();
-  fetchManhwaFromAPI(); // Load real data once
+  fetchManhwaFromAPI();
   renderLibrary();
 });
 
