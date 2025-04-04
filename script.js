@@ -143,7 +143,7 @@ function renderList(data, containerId) {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
-      <img src="${item.cover}" alt="${item.title}" onclick='openPopup(${JSON.stringify(item)})'>
+      <img src="${item.cover}" alt="${item.title}" />
       <h3>${item.title}</h3>
       <p>Chapter ${savedChapter}</p>
       <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
@@ -157,6 +157,7 @@ function renderList(data, containerId) {
         <option value="wishlist">💭 Wishlist</option>
       </select>
     `;
+    card.querySelector("img").addEventListener("click", () => openPopup(item));
     container.appendChild(card);
   });
 }
@@ -166,7 +167,7 @@ function renderAll() {
   const bookmarked = getBookmarks();
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
 
-  renderList(staticManhwa, "currently-reading"); // ✅ <-- this is new!
+  renderList(staticManhwa, "currently-reading");
   renderList(staticManhwa, "popular-list");
   renderList(staticManhwa.filter(m => bookmarked.includes(m.id)), "my-library");
   renderList(staticManhwa.filter(m => statusMap[m.id] === "completed"), "status-completed");
@@ -179,7 +180,7 @@ function renderAll() {
 document.getElementById("genreFilter").addEventListener("change", renderAll);
 document.getElementById("searchInput").addEventListener("input", renderAll);
 
-// === Theme ===
+// === Theme Toggle ===
 const themeToggle = document.getElementById("themeToggle");
 if (themeToggle) {
   themeToggle.addEventListener("change", () => {
@@ -215,4 +216,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   showLoggedInUser();
   renderAll();
+
+  // Add fade-in effect for images after rendering
+  setTimeout(() => {
+    document.querySelectorAll('.card img').forEach(img => {
+      img.addEventListener('load', () => {
+        img.classList.add('loaded');
+      });
+      if (img.complete) {
+        img.classList.add('loaded');
+      }
+    });
+  }, 100);
 });
