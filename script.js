@@ -1,6 +1,3 @@
-
-const db = firebase.firestore();
-
 // === SPA Navigation ===
 const hamburgerBtn = document.getElementById("hamburgerBtn");
 const navMenu = document.getElementById("navMenu");
