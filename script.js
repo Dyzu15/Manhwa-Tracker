@@ -35,7 +35,8 @@ function openPopup(item) {
   currentPopupId = item.id;
   const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
   const savedRating = localStorage.getItem(`rating_${item.id}`) || "";
-  document.getElementById("ratingInput").value = savedRating;
+document.getElementById("ratingInput").value = savedRating;
+
 
   document.getElementById("popupCover").src = item.cover;
   document.getElementById("popupTitle").textContent = item.title;
@@ -64,6 +65,7 @@ function saveChapterProgress() {
     renderAll();
   }
 }
+
 
 // === Bookmarks ===
 function getBookmarks() {
@@ -122,6 +124,7 @@ function renderList(data, containerId) {
     const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
     const savedRating = localStorage.getItem(`rating_${item.id}`) || "Not rated";
 
+
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
@@ -145,33 +148,6 @@ function renderList(data, containerId) {
   });
 }
 
-// === Dashboard Rendering ===
-function renderDashboard(data) {
-  const dashboardContainer = document.getElementById("dashboard-content");
-  if (!dashboardContainer) return;
-
-  dashboardContainer.innerHTML = "";
-  const bookmarked = getBookmarks();
-  const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
-
-  const recent = data.filter(item => bookmarked.includes(item.id) || statusMap[item.id]);
-
-  recent.forEach(item => {
-    const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
-    const savedRating = localStorage.getItem(`rating_${item.id}`) || "Not rated";
-
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <img src="${item.cover}" alt="${item.title}" class="cover-image" />
-      <h3>${item.title}</h3>
-      <p>Chapter ${savedChapter}</p>
-      <p>⭐ Rating: ${savedRating}</p>
-    `;
-    dashboardContainer.appendChild(card);
-  });
-}
-
 // === Firebase Fetch + Render ===
 async function fetchManhwaFromFirebase() {
   const snapshot = await db.collection("manhwa").get();
@@ -192,10 +168,110 @@ async function renderAll() {
   renderList(manhwaList.filter(m => statusMap[m.id] === "wishlist"), "status-wishlist");
 }
 
+// === User Display ===
+function showLoggedInUser() {
+  updateProfileDisplay();
+  const username = localStorage.getItem("username");
+  const userDisplay = document.getElementById("userDisplay");
+  if (userDisplay) {
+    if (username) {
+      userDisplay.textContent = `👋 Hello, ${username}`;
+      userDisplay.classList.remove("hidden");
+    } else {
+      userDisplay.classList.add("hidden");
+    }
+  }
+}
+
+// === Profile Modal Functions ===
+function openProfile() {
+  const username = localStorage.getItem("username") || "Guest";
+  const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "[]");
+  const statuses = JSON.parse(localStorage.getItem("statuses") || "{}");
+
+  let completed = 0, dropped = 0;
+  for (let key in statuses) {
+    if (statuses[key] === "completed") completed++;
+    if (statuses[key] === "dropped") dropped++;
+  }
+
+  document.getElementById("profileName").textContent = username;
+  document.getElementById("totalLibrary").textContent = bookmarks.length;
+  document.getElementById("totalCompleted").textContent = completed;
+  document.getElementById("totalDropped").textContent = dropped;
+
+  document.getElementById("profileModal").classList.remove("hidden");
+}
+
+function closeProfile() {
+  document.getElementById("profileModal").classList.add("hidden");
+}
+
+// === Edit Profile Modal Functions ===
+function openEditProfile() {
+  const currentName = localStorage.getItem("username") || "Guest";
+  const currentAvatar = localStorage.getItem("avatar");
+
+  document.getElementById("displayNameInput").value = currentName;
+  document.querySelectorAll(".avatar-option").forEach(img => {
+    img.classList.remove("selected");
+    if (currentAvatar && img.src.includes(currentAvatar)) {
+      img.classList.add("selected");
+    }
+  });
+
+  document.getElementById("editProfileModal").classList.remove("hidden");
+}
+
+function closeEditProfile() {
+  document.getElementById("editProfileModal").classList.add("hidden");
+}
+
+function selectAvatar(imgElement) {
+  document.querySelectorAll(".avatar-option").forEach(img => img.classList.remove("selected"));
+  imgElement.classList.add("selected");
+}
+
+function saveProfileChanges() {
+  const newName = document.getElementById("displayNameInput").value.trim();
+  const selectedAvatar = document.querySelector(".avatar-option.selected");
+
+  if (newName) localStorage.setItem("username", newName);
+  if (selectedAvatar) {
+    const avatarSrc = selectedAvatar.getAttribute("src");
+    localStorage.setItem("avatar", avatarSrc);
+  }
+
+  closeEditProfile();
+  updateProfileDisplay();
+}
+
+function updateProfileDisplay() {
+  const username = localStorage.getItem("username") || "Guest";
+  const avatar = localStorage.getItem("avatar") || "./icons/icon-192.png";
+  document.getElementById("profileName").textContent = username;
+  document.getElementById("userDisplay").textContent = `👋 Hello, ${username}`;
+  document.getElementById("profilePic").src = avatar;
+  document.getElementById("navAvatar").src = avatar;
+
+}
+
 // === Page Init ===
 document.addEventListener("DOMContentLoaded", () => {
   const savedSection = localStorage.getItem("lastSection") || "home";
   showSection(savedSection);
+
+  const savedTheme = localStorage.getItem("theme");
+  const themeToggle = document.getElementById("themeToggle");
+  if (savedTheme === "light") {
+    document.body.classList.add("light");
+    if (themeToggle) themeToggle.checked = true;
+  }
+
+  const profileModal = document.getElementById("profileModal");
+  if (profileModal && !profileModal.classList.contains("hidden")) {
+    profileModal.classList.add("hidden");
+  }
 
   showLoggedInUser();
   renderAll();
@@ -205,13 +281,38 @@ document.addEventListener("DOMContentLoaded", () => {
     profileBtn.addEventListener("click", openProfile);
   }
 
-  const dashboardLink = document.querySelector('a[href="#dashboard"]');
-  if (dashboardLink) {
-    dashboardLink.addEventListener("click", async (e) => {
-      e.preventDefault();
-      showSection("dashboard");
-      const manhwaList = await fetchManhwaFromFirebase();
-      renderDashboard(manhwaList);
+  // Close modals on click outside
+  document.getElementById("profileModal").addEventListener("click", function (e) {
+    if (e.target === this) closeProfile();
+  });
+
+  document.getElementById("popupOverlay").addEventListener("click", function (e) {
+    if (e.target === this) closePopup();
+  });
+
+  // Close modals on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closePopup();
+      closeProfile();
+      closeEditProfile();
+    }
+  });
+
+  // Close modals on close button click
+  document.querySelectorAll(".close-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (btn.closest("#profileModal")) closeProfile();
+      if (btn.closest("#popupOverlay")) closePopup();
+      if (btn.closest("#editProfileModal")) closeEditProfile();
     });
-  }
+  });
+
+  // Image loading shimmer
+  setTimeout(() => {
+    document.querySelectorAll('.card img').forEach(img => {
+      img.addEventListener('load', () => img.classList.add('loaded'));
+      if (img.complete) img.classList.add('loaded');
+    });
+  }, 100);
 });
