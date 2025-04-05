@@ -129,6 +129,32 @@
   </div>
 </div>
 
+  <!-- Profile Modal -->
+<div id="profileModal" class="popup-overlay hidden">
+  <!-- existing content -->
+</div>
+
+<!-- 🔽 Add this right after above block -->
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="popup-overlay hidden">
+  <div class="popup">
+    <span class="close-btn" onclick="closeEditProfile()">×</span>
+    <h3>Edit Profile</h3>
+
+    <label for="displayNameInput">Display Name:</label>
+    <input type="text" id="displayNameInput" placeholder="Enter your name" />
+
+    <label>Choose Avatar:</label>
+    <div class="avatar-options">
+      <img src="avatars/avatar1.png" class="avatar-option" onclick="selectAvatar(this)" />
+      <img src="avatars/avatar2.png" class="avatar-option" onclick="selectAvatar(this)" />
+      <img src="avatars/avatar3.png" class="avatar-option" onclick="selectAvatar(this)" />
+    </div>
+
+    <button onclick="saveProfileChanges()">Save Changes</button>
+  </div>
+</div>
+
   <!-- Scripts: Firebase Config & App -->
   <script src="./firebase.js"></script>
   <script src="./firebase-auth.js"></script>
