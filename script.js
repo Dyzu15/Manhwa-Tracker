@@ -296,4 +296,57 @@ function saveProfileChanges() {
 }
 
   }, 100);
+
+  // === Edit Profile Modal ===
+function openEditProfile() {
+  const currentName = localStorage.getItem("username") || "Guest";
+  const currentAvatar = localStorage.getItem("avatar");
+
+  document.getElementById("displayNameInput").value = currentName;
+
+  // Pre-select current avatar
+  document.querySelectorAll(".avatar-option").forEach(img => {
+    img.classList.remove("selected");
+    if (currentAvatar && img.src.includes(currentAvatar)) {
+      img.classList.add("selected");
+    }
+  });
+
+  document.getElementById("editProfileModal").classList.remove("hidden");
+}
+
+function closeEditProfile() {
+  document.getElementById("editProfileModal").classList.add("hidden");
+}
+
+function selectAvatar(imgElement) {
+  document.querySelectorAll(".avatar-option").forEach(img => img.classList.remove("selected"));
+  imgElement.classList.add("selected");
+}
+
+function saveProfileChanges() {
+  const newName = document.getElementById("displayNameInput").value.trim();
+  const selectedAvatar = document.querySelector(".avatar-option.selected");
+
+  if (newName) {
+    localStorage.setItem("username", newName);
+  }
+
+  if (selectedAvatar) {
+    const avatarSrc = selectedAvatar.getAttribute("src");
+    localStorage.setItem("avatar", avatarSrc);
+  }
+
+  closeEditProfile();
+  updateProfileDisplay(); // Refresh the modal with new values
+}
+
+function updateProfileDisplay() {
+  const username = localStorage.getItem("username") || "Guest";
+  const avatar = localStorage.getItem("avatar") || "./icons/icon-192.png";
+
+  document.getElementById("profileName").textContent = username;
+  document.getElementById("userDisplay").textContent = `👋 Hello, ${username}`;
+  document.getElementById("profilePic").src = avatar;
+}
 });
