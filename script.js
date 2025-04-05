@@ -242,3 +242,9 @@ if (profileBtn) {
   profileBtn.addEventListener("click", openProfile);
 }
 
+// Close profile modal when clicking outside of it
+profileModal.addEventListener("click", function (e) {
+  if (e.target === profileModal) {
+    closeProfile();
+  }
+});
