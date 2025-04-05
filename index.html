@@ -12,31 +12,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     html { scroll-behavior: smooth; }
-
-    /* 📊 Dashboard styling */
-    .dashboard-stats {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    .stat-box {
-      background-color: rgba(255, 255, 255, 0.05);
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      width: 150px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .stat-box h3 {
-      margin-bottom: 8px;
-      color: #f0a500;
-    }
-    .stat-box p {
-      font-size: 24px;
-      font-weight: bold;
-    }
   </style>
 
   <!-- Firebase SDKs -->
@@ -60,7 +35,6 @@
         <a href="#my-library">My List</a>
         <a href="#popular">Popular</a>
         <a href="#new">New Releases</a>
-        <a href="#dashboard">Dashboard</a> <!-- ✅ New Link -->
       </nav>
     </div>
     <div class="navbar-right">
@@ -68,8 +42,8 @@
       <button class="login-btn" id="loginBtn">Login</button>
       <button class="hidden" id="logoutBtn">Logout</button>
       <button id="profileBtn" class="avatar-button">
-        <img id="navAvatar" src="./icons/icon-192.png" alt="Profile" />
-      </button>
+  <img id="navAvatar" src="./icons/icon-192.png" alt="Profile" />
+</button>
       <span id="userDisplay" class="user-display hidden"></span>
     </div>
   </header>
@@ -108,44 +82,10 @@
       <div class="card-list" id="my-library"></div>
     </section>
 
-    <section>
-      <h2>✅ Completed</h2>
-      <div class="card-list" id="status-completed"></div>
-    </section>
-
-    <section>
-      <h2>⏸️ On Hold</h2>
-      <div class="card-list" id="status-onhold"></div>
-    </section>
-
-    <section>
-      <h2>❌ Dropped</h2>
-      <div class="card-list" id="status-dropped"></div>
-    </section>
-
-    <section>
-      <h2>📝 Wishlist</h2>
-      <div class="card-list" id="status-wishlist"></div>
-    </section>
-
-    <!-- ✅ New Dashboard Section -->
-    <section id="dashboard">
-      <h2>📊 Dashboard</h2>
-      <div class="dashboard-stats">
-        <div class="stat-box">
-          <h3>📖 Reading</h3>
-          <p id="dashboard-reading">0</p>
-        </div>
-        <div class="stat-box">
-          <h3>🏁 Completed</h3>
-          <p id="dashboard-completed">0</p>
-        </div>
-        <div class="stat-box">
-          <h3>💭 Wishlist</h3>
-          <p id="dashboard-wishlist">0</p>
-        </div>
-      </div>
-    </section>
+    <section><h2>✅ Completed</h2><div class="card-list" id="status-completed"></div></section>
+    <section><h2>⏸️ On Hold</h2><div class="card-list" id="status-onhold"></div></section>
+    <section><h2>❌ Dropped</h2><div class="card-list" id="status-dropped"></div></section>
+    <section><h2>📝 Wishlist</h2><div class="card-list" id="status-wishlist"></div></section>
   </main>
 
   <!-- Footer -->
@@ -153,7 +93,84 @@
     <p>&copy; 2025 Manhwa Tracker</p>
   </footer>
 
-  <!-- Scripts -->
+  <!-- Popup Modal -->
+  <div id="popupOverlay" class="popup-overlay hidden">
+    <div class="popup">
+      <span class="close-btn" onclick="closePopup()">×</span>
+      <img id="popupCover" src="" alt="Cover" />
+      <h3 id="popupTitle">Title</h3>
+      <p id="popupChapter">Chapter</p>
+      <label for="chapterInput">Update Chapter:</label>
+      <label for="ratingInput">Your Rating (1–10):</label>
+      
+      
+<select id="ratingInput">
+  <option value="">⭐ Rate</option>
+  <option value="1">1/10</option>
+  <option value="2">2/10</option>
+  <option value="3">3/10</option>
+  <option value="4">4/10</option>
+  <option value="5">5/10</option>
+  <option value="6">6/10</option>
+  <option value="7">7/10</option>
+  <option value="8">8/10</option>
+  <option value="9">9/10</option>
+  <option value="10">10/10</option>
+</select>
+      
+      <button onclick="saveChapterProgress()">Save Progress</button>
+      <p id="popupDescription">This is a placeholder synopsis.</p>
+    </div>
+  </div>
+
+  <!-- Firebase Login Modal -->
+  <div id="loginModal" class="popup-overlay hidden">
+    <div class="popup">
+      <span class="close-btn" onclick="closeLogin()">×</span>
+      <h3>Login with Google</h3>
+      <button type="button" onclick="loginWithGoogle()">Sign in with Google</button>
+    </div>
+  </div>
+  
+<!-- Profile Modal -->
+<div id="profileModal" class="popup-overlay hidden">
+  <div class="popup">
+    <span class="close-btn" onclick="closeProfile()">×</span>
+    <h3>User Profile</h3>
+    <img id="profilePic" src="./icons/icon-192.png" alt="Profile Picture" width="100" style="border-radius: 50%;" />
+    <p id="profileName">Guest</p>
+    <ul>
+      <li>Total in Library: <span id="totalLibrary">0</span></li>
+      <li>Completed: <span id="totalCompleted">0</span></li>
+      <li>Dropped: <span id="totalDropped">0</span></li>
+      <li>
+    <button onclick="openEditProfile()">Edit Profile</button>
+  </li>
+    </ul>
+  </div>
+</div>
+<!-- 🔽 Add this right after above block -->
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="popup-overlay hidden">
+  <div class="popup">
+    <span class="close-btn" onclick="closeEditProfile()">×</span>
+    <h3>Edit Profile</h3>
+
+    <label for="displayNameInput">Display Name:</label>
+    <input type="text" id="displayNameInput" placeholder="Enter your name" />
+
+    <label>Choose Avatar:</label>
+    <div class="avatar-options">
+      <img src="avatars/avatar1.png" class="avatar-option" onclick="selectAvatar(this)" />
+      <img src="avatars/avatar2.png" class="avatar-option" onclick="selectAvatar(this)" />
+      <img src="avatars/avatar3.png" class="avatar-option" onclick="selectAvatar(this)" />
+    </div>
+
+    <button onclick="saveProfileChanges()">Save Changes</button>
+  </div>
+</div>
+
+  <!-- Scripts: Firebase Config & App -->
   <script src="./firebase.js"></script>
   <script src="./firebase-auth.js"></script>
   <script src="./script.js"></script>
