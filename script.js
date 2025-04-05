@@ -204,7 +204,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (themeToggle) themeToggle.checked = true;
   }
 
-  // ✅ Force hiding profile modal on load (just in case)
   const profileModal = document.getElementById("profileModal");
   if (profileModal && !profileModal.classList.contains("hidden")) {
     profileModal.classList.add("hidden");
@@ -218,19 +217,29 @@ document.addEventListener("DOMContentLoaded", () => {
     profileBtn.addEventListener("click", openProfile);
   }
 
+  // Close modals on click outside
   document.getElementById("profileModal").addEventListener("click", function (e) {
     if (e.target === this) closeProfile();
   });
 
+  document.getElementById("popupOverlay").addEventListener("click", function (e) {
+    if (e.target === this) closePopup();
+  });
+
+  // Close modals on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closePopup();
+      closeProfile();
+    }
+  });
+
+  // Close modals on close button click
   document.querySelectorAll(".close-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       if (btn.closest("#profileModal")) closeProfile();
       if (btn.closest("#popupOverlay")) closePopup();
     });
-  });
-
-  document.getElementById("popupOverlay").addEventListener("click", function (e) {
-    if (e.target === this) closePopup();
   });
 
   setTimeout(() => {
