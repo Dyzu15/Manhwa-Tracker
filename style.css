@@ -497,3 +497,19 @@ footer {
 .avatar-option.selected {
   border-color: #f0a500;
 }
+
+.avatar-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+#navAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f0a500;
+}
+
