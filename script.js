@@ -123,6 +123,8 @@ function renderList(data, containerId) {
     const isRead = localStorage.getItem(item.id) === "read";
     const bookmarked = isBookmarked(item.id);
     const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
+    const savedRating = localStorage.getItem(`rating_${item.id}`) || "Not rated";
+
 
     const card = document.createElement("div");
     card.className = "card";
@@ -130,8 +132,9 @@ function renderList(data, containerId) {
       <img src="${item.cover}" alt="${item.title}" class="cover-image" />
       <h3>${item.title}</h3>
       <p>Chapter ${savedChapter}</p>
+      <p>⭐ Rating: ${savedRating}</p>
       <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
-      <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "⭐ Bookmarked" : "☆ Add to Library"}</button>
+      <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
       <select onchange="updateStatus('${item.id}', this.value)">
         <option value="">📂 Set Status</option>
         <option value="reading">📖 Reading</option>
