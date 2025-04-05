@@ -155,7 +155,8 @@ async function renderAll() {
 }
 
 // === User Display ===
-function showLoggedInUser() {
+function showLoggedInUser() updateProfileDisplay();
+{ 
   const username = localStorage.getItem("username");
   const userDisplay = document.getElementById("userDisplay");
   if (userDisplay) {
