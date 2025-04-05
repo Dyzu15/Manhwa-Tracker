@@ -475,3 +475,25 @@ footer {
   padding: 5px 0;
   font-size: 16px;
 }
+
+.avatar-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+.avatar-option {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.avatar-option.selected {
+  border-color: #f0a500;
+}
