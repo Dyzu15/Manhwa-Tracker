@@ -427,3 +427,43 @@ footer {
   }
 }
 
+/* ======= Profile Modal Styles ======= */
+#profileModal.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+#profileModal .popup {
+  background: #1e1e1e;
+  color: white;
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 350px;
+  width: 90%;
+  text-align: center;
+}
+
+#profileModal .popup img {
+  margin-bottom: 10px;
+  border: 2px solid #ffd000;
+}
+
+#profileModal .popup ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  text-align: left;
+}
+
+#profileModal .popup ul li {
+  padding: 5px 0;
+  font-size: 16px;
+}
