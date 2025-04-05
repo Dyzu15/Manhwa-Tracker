@@ -49,11 +49,20 @@ function closePopup() {
 
 function saveChapterProgress() {
   const newChapter = document.getElementById("chapterInput").value;
+  const newRating = document.getElementById("ratingInput").value;
+
   if (currentPopupId && newChapter && Number(newChapter) > 0) {
     localStorage.setItem(`chapter_${currentPopupId}`, newChapter);
+
+    if (newRating) {
+      localStorage.setItem(`rating_${currentPopupId}`, newRating);
+    }
+
     closePopup();
     renderAll();
   }
+}
+
 }
 
 // === Bookmarks ===
