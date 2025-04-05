@@ -203,3 +203,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }, 100);
 });
+
+// === Close Popup When Clicking Outside the Modal ===
+document.getElementById("popupOverlay").addEventListener("click", function (e) {
+  if (e.target === this) {
+    closePopup();
+  }
+});
