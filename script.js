@@ -34,6 +34,9 @@ let currentPopupId = null;
 function openPopup(item) {
   currentPopupId = item.id;
   const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
+  const savedRating = localStorage.getItem(`rating_${item.id}`) || "";
+document.getElementById("ratingInput").value = savedRating;
+
 
   document.getElementById("popupCover").src = item.cover;
   document.getElementById("popupTitle").textContent = item.title;
