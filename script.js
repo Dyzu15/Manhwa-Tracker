@@ -1,4 +1,3 @@
-
 // === SPA Navigation ===
 const hamburgerBtn = document.getElementById("hamburgerBtn");
 const navMenu = document.getElementById("navMenu");
@@ -208,19 +207,23 @@ document.addEventListener("DOMContentLoaded", () => {
   showLoggedInUser();
   renderAll();
 
+  // Profile button click
   const profileBtn = document.getElementById("profileBtn");
   if (profileBtn) {
     profileBtn.addEventListener("click", openProfile);
   }
 
+  // Close profile when clicking outside
   document.getElementById("profileModal").addEventListener("click", function (e) {
     if (e.target === this) closeProfile();
   });
 
+  // Close popup when clicking outside
   document.getElementById("popupOverlay").addEventListener("click", function (e) {
     if (e.target === this) closePopup();
   });
 
+  // Image load shimmer effect
   setTimeout(() => {
     document.querySelectorAll('.card img').forEach(img => {
       img.addEventListener('load', () => img.classList.add('loaded'));
@@ -228,3 +231,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }, 100);
 });
+
+// === Close Button for Profile Modal ===
+const closeProfileBtn = document.querySelector("#profileModal .close-btn");
+if (closeProfileBtn) {
+  closeProfileBtn.addEventListener("click", closeProfile);
+}
