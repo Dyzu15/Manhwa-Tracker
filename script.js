@@ -198,6 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     document.querySelectorAll('.card img').forEach(img => {
       img.addEventListener('load', () => img.classList.add('loaded'));
+      console.log("Loaded:", img.src);
       if (img.complete) img.classList.add('loaded');
     });
   }, 100);
