@@ -238,6 +238,8 @@ function updateProfileDisplay() {
   document.getElementById("profileName").textContent = username;
   document.getElementById("userDisplay").textContent = `👋 Hello, ${username}`;
   document.getElementById("profilePic").src = avatar;
+  document.getElementById("navAvatar").src = avatar;
+
 }
 
 // === Page Init ===
