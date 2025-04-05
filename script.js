@@ -66,6 +66,7 @@ function saveChapterProgress() {
   }
 }
 
+
 // === Bookmarks ===
 function getBookmarks() {
   return JSON.parse(localStorage.getItem("bookmarks") || "[]");
