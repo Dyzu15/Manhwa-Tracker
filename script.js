@@ -314,5 +314,55 @@ document.addEventListener("DOMContentLoaded", () => {
       img.addEventListener('load', () => img.classList.add('loaded'));
       if (img.complete) img.classList.add('loaded');
     });
+
+    function renderDashboard(data) {
+  const recentList = document.querySelector("#recently-read ul");
+  const topRatedList = document.querySelector("#top-rated ul");
+  const bookmarksList = document.querySelector("#most-bookmarked ul");
+
+  recentList.innerHTML = "";
+  topRatedList.innerHTML = "";
+  bookmarksList.innerHTML = "";
+
+  // Recently read (based on localStorage timestamps)
+  const recent = data
+    .map(item => ({
+      ...item,
+      time: localStorage.getItem(`readTime_${item.id}`) || 0
+    }))
+    .filter(m => m.time > 0)
+    .sort((a, b) => b.time - a.time)
+    .slice(0, 3);
+
+  recent.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.title}`;
+    recentList.appendChild(li);
+  });
+
+  // Top Rated
+  const rated = data
+    .map(item => ({
+      ...item,
+      rating: parseInt(localStorage.getItem(`rating_${item.id}`) || 0)
+    }))
+    .filter(m => m.rating > 0)
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 3);
+
+  rated.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.title} (${item.rating}/10)`;
+    topRatedList.appendChild(li);
+  });
+
+  // Most Bookmarked
+  const bookmarks = getBookmarks();
+  const bookmarkedData = data.filter(m => bookmarks.includes(m.id)).slice(0, 3);
+  bookmarkedData.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.title}`;
+    bookmarksList.appendChild(li);
+  });
   }, 100);
 });
