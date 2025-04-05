@@ -1,3 +1,4 @@
+
 // === SPA Navigation ===
 const hamburgerBtn = document.getElementById("hamburgerBtn");
 const navMenu = document.getElementById("navMenu");
@@ -154,19 +155,6 @@ async function renderAll() {
   renderList(manhwaList.filter(m => statusMap[m.id] === "wishlist"), "status-wishlist");
 }
 
-// === Search & Genre Events ===
-document.getElementById("genreFilter").addEventListener("change", renderAll);
-document.getElementById("searchInput").addEventListener("input", renderAll);
-
-// === Theme Toggle ===
-const themeToggle = document.getElementById("themeToggle");
-if (themeToggle) {
-  themeToggle.addEventListener("change", () => {
-    document.body.classList.toggle("light");
-    localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
-  });
-}
-
 // === User Display ===
 function showLoggedInUser() {
   const username = localStorage.getItem("username");
@@ -181,40 +169,7 @@ function showLoggedInUser() {
   }
 }
 
-// === Page Init ===
-document.addEventListener("DOMContentLoaded", () => {
-  const savedSection = localStorage.getItem("lastSection") || "home";
-  showSection(savedSection);
-
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "light") {
-    document.body.classList.add("light");
-    if (themeToggle) themeToggle.checked = true;
-  }
-
-  showLoggedInUser();
-  renderAll();
-
-  setTimeout(() => {
-    document.querySelectorAll('.card img').forEach(img => {
-      img.addEventListener('load', () => img.classList.add('loaded'));
-      console.log("Loaded:", img.src);
-      if (img.complete) img.classList.add('loaded');
-    });
-  }, 100);
-});
-
-// === Close Popup When Clicking Outside the Modal ===
-document.getElementById("popupOverlay").addEventListener("click", function (e) {
-  if (e.target === this) {
-    closePopup();
-  }
-});
-
-// === Profile Modal ===
-const profileBtn = document.getElementById('profileBtn');
-const profileModal = document.getElementById('profileModal');
-
+// === Profile Modal Functions ===
 function openProfile() {
   const username = localStorage.getItem("username") || "Guest";
   const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "[]");
@@ -231,20 +186,45 @@ function openProfile() {
   document.getElementById("totalCompleted").textContent = completed;
   document.getElementById("totalDropped").textContent = dropped;
 
-  profileModal.classList.remove("hidden");
+  document.getElementById("profileModal").classList.remove("hidden");
 }
 
 function closeProfile() {
-  profileModal.classList.add("hidden");
+  document.getElementById("profileModal").classList.add("hidden");
 }
 
-if (profileBtn) {
-  profileBtn.addEventListener("click", openProfile);
-}
+// === Page Init ===
+document.addEventListener("DOMContentLoaded", () => {
+  const savedSection = localStorage.getItem("lastSection") || "home";
+  showSection(savedSection);
 
-// Close profile modal when clicking outside of it
-profileModal.addEventListener("click", function (e) {
-  if (e.target === profileModal) {
-    closeProfile();
+  const savedTheme = localStorage.getItem("theme");
+  const themeToggle = document.getElementById("themeToggle");
+  if (savedTheme === "light") {
+    document.body.classList.add("light");
+    if (themeToggle) themeToggle.checked = true;
   }
+
+  showLoggedInUser();
+  renderAll();
+
+  const profileBtn = document.getElementById("profileBtn");
+  if (profileBtn) {
+    profileBtn.addEventListener("click", openProfile);
+  }
+
+  document.getElementById("profileModal").addEventListener("click", function (e) {
+    if (e.target === this) closeProfile();
+  });
+
+  document.getElementById("popupOverlay").addEventListener("click", function (e) {
+    if (e.target === this) closePopup();
+  });
+
+  setTimeout(() => {
+    document.querySelectorAll('.card img').forEach(img => {
+      img.addEventListener('load', () => img.classList.add('loaded'));
+      if (img.complete) img.classList.add('loaded');
+    });
+  }, 100);
 });
