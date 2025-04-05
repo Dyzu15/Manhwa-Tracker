@@ -74,7 +74,7 @@ button:hover {
   margin-top: 10px;
 }
 
-/* ========== Image Loading with Shimmer ========== */
+/* ========== Image Loading ========== */
 .card img {
   width: 100%;
   border-radius: 6px;
@@ -92,18 +92,6 @@ button:hover {
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
-}
-
-/* ========== Card Shimmer Overlay ========== */
-.card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 200%;
-  height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.1), transparent);
-  animation: shimmer 2s infinite;
-  pointer-events: none;
 }
 
 /* ========== Card Container ========== */
@@ -177,7 +165,7 @@ button:hover {
   font-size: 14px;
 }
 
-/* ========== Hamburger Menu ========== */
+/* ========== Hamburger ========== */
 .hamburger-btn {
   display: none;
   background: none;
@@ -208,7 +196,7 @@ button:hover {
   }
 }
 
-/* ========== Background Overlay Animation ========== */
+/* ========== Background ========== */
 .background-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -232,10 +220,13 @@ button:hover {
   top: 0; left: 0;
   width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.8);
-  display: flex;
+  display: none; /* default hidden */
   align-items: center;
   justify-content: center;
   z-index: 1000;
+}
+.popup-overlay.show {
+  display: flex;
 }
 .popup {
   background: rgba(31, 31, 31, 0.75);
@@ -265,63 +256,15 @@ button:hover {
   cursor: pointer;
 }
 .hidden {
+  display: none !important;
+}
+
+/* ========== Profile Modal Fix ========== */
+#profileModal {
   display: none;
 }
-
-/* ========== Theme Toggle ========== */
-.theme-toggle {
+#profileModal.show {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  font-size: 14px;
-  color: #ccc;
-}
-.theme-toggle input {
-  margin-right: 6px;
-  transform: scale(1.1);
-}
-
-/* ========== Filter Section ========== */
-.filter-section {
-  text-align: center;
-  margin: 20px auto;
-  font-size: 14px;
-  color: #ccc;
-}
-#genreFilter {
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 14px;
-  border: none;
-  background-color: #1f1f1f;
-  color: #fff;
-}
-
-/* ========== Light Mode Support ========== */
-body.light {
-  background-color: #f9f9f9;
-  color: #000;
-}
-body.light .card {
-  background-color: #fff;
-  color: #000;
-}
-body.light .popup {
-  background-color: #fff;
-  color: #000;
-}
-body.light .popup p,
-body.light .card p {
-  color: #333;
-}
-body.light #genreFilter {
-  background-color: #fff;
-  color: #000;
-  border: 1px solid #ccc;
-}
-body.light .background-overlay {
-  opacity: 0.04;
 }
 
 /* ========== Footer ========== */
@@ -331,139 +274,4 @@ footer {
   font-size: 14px;
   background-color: rgba(0, 0, 0, 0.6);
   color: #777;
-}
-
-/* ========== Mobile Optimization ========== */
-@media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .navbar-left, .navbar-center, .navbar-right {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .navbar-right input[type="text"] {
-    width: 100%;
-    margin-top: 6px;
-  }
-
-  .hamburger-btn {
-    display: block;
-  }
-
-  .navbar-links {
-    flex-direction: column;
-    gap: 12px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease;
-    width: 100%;
-  }
-
-  .navbar-links.open {
-    max-height: 300px;
-    margin-top: 10px;
-  }
-
-  .card-list {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-left: 12px;
-  }
-
-  .card {
-    width: 140px;
-    scroll-snap-align: start;
-  }
-
-  .popup {
-    width: 90%;
-    padding: 16px;
-  }
-
-  .popup input {
-    font-size: 16px;
-  }
-
-  .filter-section {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .filter-section select {
-    width: 80%;
-    max-width: 200px;
-    margin-top: 8px;
-  }
-
-  footer {
-    font-size: 12px;
-    padding: 6px;
-  }
-}
-
-@media (max-width: 480px) {
-  .site-title {
-    font-size: 18px;
-  }
-
-  .card {
-    width: 130px;
-  }
-
-  h2 {
-    font-size: 20px;
-  }
-
-  .login-btn, .logout-btn {
-    padding: 6px 10px;
-    font-size: 14px;
-  }
-}
-
-/* ======= Profile Modal Styles ======= */
-#profileModal.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-#profileModal .popup {
-  background: #1e1e1e;
-  color: white;
-  padding: 30px;
-  border-radius: 8px;
-  max-width: 350px;
-  width: 90%;
-  text-align: center;
-}
-
-#profileModal .popup img {
-  margin-bottom: 10px;
-  border: 2px solid #ffd000;
-}
-
-#profileModal .popup ul {
-  list-style: none;
-  padding: 0;
-  margin: 20px 0 0;
-  text-align: left;
-}
-
-#profileModal .popup ul li {
-  padding: 5px 0;
-  font-size: 16px;
 }
