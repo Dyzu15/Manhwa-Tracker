@@ -1,4 +1,3 @@
-
 // === SPA Navigation ===
 const hamburgerBtn = document.getElementById("hamburgerBtn");
 const navMenu = document.getElementById("navMenu");
@@ -203,6 +202,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedTheme === "light") {
     document.body.classList.add("light");
     if (themeToggle) themeToggle.checked = true;
+  }
+
+  // ✅ Force hiding profile modal on load (just in case)
+  const profileModal = document.getElementById("profileModal");
+  if (profileModal && !profileModal.classList.contains("hidden")) {
+    profileModal.classList.add("hidden");
   }
 
   showLoggedInUser();
