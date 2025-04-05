@@ -113,6 +113,21 @@
       <button type="button" onclick="loginWithGoogle()">Sign in with Google</button>
     </div>
   </div>
+  
+<!-- Profile Modal -->
+<div id="profileModal" class="popup-overlay hidden">
+  <div class="popup">
+    <span class="close-btn" onclick="closeProfile()">×</span>
+    <h3>User Profile</h3>
+    <img id="profilePic" src="./icons/icon-192.png" alt="Profile Picture" width="100" style="border-radius: 50%;" />
+    <p id="profileName">Guest</p>
+    <ul>
+      <li>Total in Library: <span id="totalLibrary">0</span></li>
+      <li>Completed: <span id="totalCompleted">0</span></li>
+      <li>Dropped: <span id="totalDropped">0</span></li>
+    </ul>
+  </div>
+</div>
 
   <!-- Scripts: Firebase Config & App -->
   <script src="./firebase.js"></script>
