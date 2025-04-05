@@ -155,8 +155,8 @@ async function renderAll() {
 }
 
 // === User Display ===
-function showLoggedInUser() updateProfileDisplay();
-{ 
+function showLoggedInUser() {
+  updateProfileDisplay();
   const username = localStorage.getItem("username");
   const userDisplay = document.getElementById("userDisplay");
   if (userDisplay) {
@@ -191,6 +191,53 @@ function openProfile() {
 
 function closeProfile() {
   document.getElementById("profileModal").classList.add("hidden");
+}
+
+// === Edit Profile Modal Functions ===
+function openEditProfile() {
+  const currentName = localStorage.getItem("username") || "Guest";
+  const currentAvatar = localStorage.getItem("avatar");
+
+  document.getElementById("displayNameInput").value = currentName;
+  document.querySelectorAll(".avatar-option").forEach(img => {
+    img.classList.remove("selected");
+    if (currentAvatar && img.src.includes(currentAvatar)) {
+      img.classList.add("selected");
+    }
+  });
+
+  document.getElementById("editProfileModal").classList.remove("hidden");
+}
+
+function closeEditProfile() {
+  document.getElementById("editProfileModal").classList.add("hidden");
+}
+
+function selectAvatar(imgElement) {
+  document.querySelectorAll(".avatar-option").forEach(img => img.classList.remove("selected"));
+  imgElement.classList.add("selected");
+}
+
+function saveProfileChanges() {
+  const newName = document.getElementById("displayNameInput").value.trim();
+  const selectedAvatar = document.querySelector(".avatar-option.selected");
+
+  if (newName) localStorage.setItem("username", newName);
+  if (selectedAvatar) {
+    const avatarSrc = selectedAvatar.getAttribute("src");
+    localStorage.setItem("avatar", avatarSrc);
+  }
+
+  closeEditProfile();
+  updateProfileDisplay();
+}
+
+function updateProfileDisplay() {
+  const username = localStorage.getItem("username") || "Guest";
+  const avatar = localStorage.getItem("avatar") || "./icons/icon-192.png";
+  document.getElementById("profileName").textContent = username;
+  document.getElementById("userDisplay").textContent = `👋 Hello, ${username}`;
+  document.getElementById("profilePic").src = avatar;
 }
 
 // === Page Init ===
@@ -232,6 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Escape") {
       closePopup();
       closeProfile();
+      closeEditProfile();
     }
   });
 
@@ -240,114 +288,15 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => {
       if (btn.closest("#profileModal")) closeProfile();
       if (btn.closest("#popupOverlay")) closePopup();
+      if (btn.closest("#editProfileModal")) closeEditProfile();
     });
   });
 
+  // Image loading shimmer
   setTimeout(() => {
     document.querySelectorAll('.card img').forEach(img => {
       img.addEventListener('load', () => img.classList.add('loaded'));
       if (img.complete) img.classList.add('loaded');
     });
-
-  // Open Edit Profile Modal
-function openEditProfile() {
-  const currentName = localStorage.getItem("username") || "Guest";
-  const currentAvatar = localStorage.getItem("avatar");
-
-  document.getElementById("displayNameInput").value = currentName;
-
-  // Pre-select current avatar
-  document.querySelectorAll(".avatar-option").forEach(img => {
-    img.classList.remove("selected");
-    if (img.src.includes(currentAvatar)) {
-      img.classList.add("selected");
-    }
-  });
-
-  document.getElementById("editProfileModal").classList.remove("hidden");
-}
-
-// Close Edit Profile Modal
-function closeEditProfile() {
-  document.getElementById("editProfileModal").classList.add("hidden");
-}
-
-// Select Avatar
-function selectAvatar(imgElement) {
-  document.querySelectorAll(".avatar-option").forEach(img => img.classList.remove("selected"));
-  imgElement.classList.add("selected");
-}
-
-// Save Profile Changes
-function saveProfileChanges() {
-  const newName = document.getElementById("displayNameInput").value.trim();
-  const selectedAvatar = document.querySelector(".avatar-option.selected");
-
-  if (newName) {
-    localStorage.setItem("username", newName);
-  }
-
-  if (selectedAvatar) {
-    const avatarSrc = selectedAvatar.getAttribute("src");
-    localStorage.setItem("avatar", avatarSrc);
-  }
-
-  closeEditProfile();
-  updateProfileDisplay(); // Refresh the profile modal
-}
-
   }, 100);
-
-  // === Edit Profile Modal ===
-function openEditProfile() {
-  const currentName = localStorage.getItem("username") || "Guest";
-  const currentAvatar = localStorage.getItem("avatar");
-
-  document.getElementById("displayNameInput").value = currentName;
-
-  // Pre-select current avatar
-  document.querySelectorAll(".avatar-option").forEach(img => {
-    img.classList.remove("selected");
-    if (currentAvatar && img.src.includes(currentAvatar)) {
-      img.classList.add("selected");
-    }
-  });
-
-  document.getElementById("editProfileModal").classList.remove("hidden");
-}
-
-function closeEditProfile() {
-  document.getElementById("editProfileModal").classList.add("hidden");
-}
-
-function selectAvatar(imgElement) {
-  document.querySelectorAll(".avatar-option").forEach(img => img.classList.remove("selected"));
-  imgElement.classList.add("selected");
-}
-
-function saveProfileChanges() {
-  const newName = document.getElementById("displayNameInput").value.trim();
-  const selectedAvatar = document.querySelector(".avatar-option.selected");
-
-  if (newName) {
-    localStorage.setItem("username", newName);
-  }
-
-  if (selectedAvatar) {
-    const avatarSrc = selectedAvatar.getAttribute("src");
-    localStorage.setItem("avatar", avatarSrc);
-  }
-
-  closeEditProfile();
-  updateProfileDisplay(); // Refresh the modal with new values
-}
-
-function updateProfileDisplay() {
-  const username = localStorage.getItem("username") || "Guest";
-  const avatar = localStorage.getItem("avatar") || "./icons/icon-192.png";
-
-  document.getElementById("profileName").textContent = username;
-  document.getElementById("userDisplay").textContent = `👋 Hello, ${username}`;
-  document.getElementById("profilePic").src = avatar;
-}
 });
