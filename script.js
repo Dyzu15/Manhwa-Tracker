@@ -210,3 +210,35 @@ document.getElementById("popupOverlay").addEventListener("click", function (e) {
     closePopup();
   }
 });
+
+// === Profile Modal ===
+const profileBtn = document.getElementById('profileBtn');
+const profileModal = document.getElementById('profileModal');
+
+function openProfile() {
+  const username = localStorage.getItem("username") || "Guest";
+  const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "[]");
+  const statuses = JSON.parse(localStorage.getItem("statuses") || "{}");
+
+  let completed = 0, dropped = 0;
+  for (let key in statuses) {
+    if (statuses[key] === "completed") completed++;
+    if (statuses[key] === "dropped") dropped++;
+  }
+
+  document.getElementById("profileName").textContent = username;
+  document.getElementById("totalLibrary").textContent = bookmarks.length;
+  document.getElementById("totalCompleted").textContent = completed;
+  document.getElementById("totalDropped").textContent = dropped;
+
+  profileModal.classList.remove("hidden");
+}
+
+function closeProfile() {
+  profileModal.classList.add("hidden");
+}
+
+if (profileBtn) {
+  profileBtn.addEventListener("click", openProfile);
+}
+
