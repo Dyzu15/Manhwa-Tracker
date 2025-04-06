@@ -149,7 +149,6 @@ function renderList(data, containerId) {
 
 // === Dashboard Rendering ===
 function renderDashboard(data) {
-  // Recently Read
   const recentId = localStorage.getItem("lastRead");
   const recentItem = data.find(item => item.id === recentId);
   const recentList = document.querySelector("#recently-read ul");
@@ -160,7 +159,6 @@ function renderDashboard(data) {
     recentList.appendChild(li);
   }
 
-  // Top Rated
   const rated = data
     .map(item => {
       const rating = parseInt(localStorage.getItem(`rating_${item.id}`));
@@ -178,7 +176,6 @@ function renderDashboard(data) {
     topRatedList.appendChild(li);
   });
 
-  // Most Bookmarked
   const bookmarks = getBookmarks();
   const bookmarkedItems = data.filter(item => bookmarks.includes(item.id)).slice(0, 5);
   const bookmarkedList = document.querySelector("#most-bookmarked ul");
@@ -297,6 +294,14 @@ function updateProfileDisplay() {
   document.getElementById("userDisplay").textContent = `👋 Hello, ${username}`;
   document.getElementById("profilePic").src = avatar;
   document.getElementById("navAvatar").src = avatar;
+
+  // Fallback for iOS web rendering issues
+  document.getElementById("profilePic").onerror = () => {
+    document.getElementById("profilePic").src = "./icons/icon-192.png";
+  };
+  document.getElementById("navAvatar").onerror = () => {
+    document.getElementById("navAvatar").src = "./icons/icon-192.png";
+  };
 }
 
 // === Page Init ===
@@ -324,7 +329,6 @@ document.addEventListener("DOMContentLoaded", () => {
     profileBtn.addEventListener("click", openProfile);
   }
 
-  // Close modals on click outside
   document.getElementById("profileModal").addEventListener("click", function (e) {
     if (e.target === this) closeProfile();
   });
@@ -333,7 +337,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === this) closePopup();
   });
 
-  // Close modals on Escape key
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       closePopup();
@@ -342,7 +345,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Close modals on close button click
   document.querySelectorAll(".close-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       if (btn.closest("#profileModal")) closeProfile();
@@ -351,8 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Image loading shimmer
-    setTimeout(() => {
+  setTimeout(() => {
     document.querySelectorAll('.card img').forEach(img => {
       img.addEventListener('load', () => img.classList.add('loaded'));
       if (img.complete) img.classList.add('loaded');
@@ -368,4 +369,3 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.error('❌ Service Worker registration failed:', err));
   });
 }
-
