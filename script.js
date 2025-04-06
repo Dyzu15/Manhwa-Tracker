@@ -143,11 +143,7 @@ function renderList(data, containerId) {
       </select>
     `;
     card.addEventListener("click", (e) => {
-  const isInteractive =
-    e.target.closest("button") ||
-    e.target.closest("select") ||
-    e.target.closest("option");
-
+  const isInteractive = e.target.closest("button") || e.target.closest("select") || e.target.tagName === "OPTION";
   if (!isInteractive) {
     openPopup(item);
   }
