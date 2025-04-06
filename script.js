@@ -36,15 +36,20 @@ function openPopup(item) {
   currentPopupId = item.id;
   const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
   const savedRating = localStorage.getItem(`rating_${item.id}`) || "";
-  document.getElementById("ratingInput").value = savedRating;
+
+  const ratingInput = document.getElementById("ratingInput");
+  const chapterInput = document.getElementById("chapterInput");
+
+  if (ratingInput) ratingInput.value = savedRating;
+  if (chapterInput) chapterInput.value = savedChapter;
 
   document.getElementById("popupCover").src = item.cover;
   document.getElementById("popupTitle").textContent = item.title;
   document.getElementById("popupChapter").textContent = `Current: Chapter ${savedChapter}`;
-  document.getElementById("chapterInput").value = savedChapter;
   document.getElementById("popupDescription").textContent = item.description || "No description available.";
   document.getElementById("popupOverlay").classList.remove("hidden");
 }
+
 
 function closePopup() {
   document.getElementById("popupOverlay").classList.add("hidden");
