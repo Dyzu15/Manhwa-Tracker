@@ -2,10 +2,11 @@
   "name": "Manhwa Tracker",
   "short_name": "Manhwa",
   "description": "Track your favorite manhwa series with reading progress, genres, and bookmarks.",
-  "start_url": ".",
+  "start_url": "./",
   "id": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "browser"],
   "orientation": "portrait",
   "background_color": "#121212",
   "theme_color": "#121212",
@@ -24,3 +25,4 @@
     }
   ]
 }
+
