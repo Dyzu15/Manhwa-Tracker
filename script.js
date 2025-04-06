@@ -1,3 +1,4 @@
+
 // === SPA Navigation ===
 const hamburgerBtn = document.getElementById("hamburgerBtn");
 const navMenu = document.getElementById("navMenu");
@@ -142,12 +143,9 @@ function renderList(data, containerId) {
         <option value="wishlist">💭 Wishlist</option>
       </select>
     `;
-    card.addEventListener("click", (e) => {
-  const isInteractive = e.target.closest("button") || e.target.closest("select") || e.target.tagName === "OPTION";
-  if (!isInteractive) {
-    openPopup(item);
-  }
-});
+
+    // Only open popup when the image itself is clicked
+    card.querySelector("img").addEventListener("click", () => openPopup(item));
 
     container.appendChild(card);
   });
