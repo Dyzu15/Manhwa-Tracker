@@ -444,6 +444,14 @@ footer {
   }
 }
 
+@media (max-width: 768px) {
+  .popup img {
+    max-height: 150px;
+    width: auto;
+  }
+}
+
+
 /* ======= Profile Modal Styles ======= */
 #profileModal {
   position: fixed;
