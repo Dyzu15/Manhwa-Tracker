@@ -143,8 +143,12 @@ function renderList(data, containerId) {
       </select>
     `;
     card.addEventListener("click", (e) => {
-  // Prevent triggering popup when clicking buttons or select
-  if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT') {
+  const isInteractive =
+    e.target.closest("button") ||
+    e.target.closest("select") ||
+    e.target.closest("option");
+
+  if (!isInteractive) {
     openPopup(item);
   }
 });
