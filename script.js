@@ -155,8 +155,16 @@ function renderList(data, containerId) {
 });
 
 
-    // Only open popup when the image itself is clicked
-    card.querySelector("img").addEventListener("click", () => openPopup(item));
+   // Open popup when clicking anywhere on the card (except interactive elements)
+card.addEventListener("click", (e) => {
+  const isInteractive =
+    e.target.closest("button") ||
+    e.target.closest("select") ||
+    e.target.tagName === "OPTION";
+  if (!isInteractive) {
+    openPopup(item);
+  }
+});
 
     container.appendChild(card);
   });
