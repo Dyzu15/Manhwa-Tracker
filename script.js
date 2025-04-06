@@ -128,7 +128,6 @@ function renderList(data, containerId) {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
-      <img src="${item.cover}" alt="${item.title}" class="cover-image" data-click="popup" />
       <h3>${item.title}</h3>
       <p>Chapter ${savedChapter}</p>
       <p>⭐ Rating: ${savedRating}</p>
@@ -143,6 +142,16 @@ function renderList(data, containerId) {
         <option value="wishlist">💭 Wishlist</option>
       </select>
     `;
+    card.addEventListener("click", (e) => {
+  const isInteractive =
+    e.target.closest("button") ||
+    e.target.closest("select") ||
+    e.target.tagName === "OPTION";
+  if (!isInteractive) {
+    openPopup(item);
+  }
+});
+
 
     // Only open popup when the image itself is clicked
     card.querySelector("img").addEventListener("click", () => openPopup(item));
