@@ -35,8 +35,7 @@ function openPopup(item) {
   currentPopupId = item.id;
   const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
   const savedRating = localStorage.getItem(`rating_${item.id}`) || "";
-document.getElementById("ratingInput").value = savedRating;
-
+  document.getElementById("ratingInput").value = savedRating;
 
   document.getElementById("popupCover").src = item.cover;
   document.getElementById("popupTitle").textContent = item.title;
@@ -61,11 +60,11 @@ function saveChapterProgress() {
       localStorage.setItem(`rating_${currentPopupId}`, newRating);
     }
 
+    localStorage.setItem("lastRead", currentPopupId);
     closePopup();
     renderAll();
   }
 }
-
 
 // === Bookmarks ===
 function getBookmarks() {
@@ -90,6 +89,7 @@ function isBookmarked(id) {
 function toggleRead(id) {
   const isRead = localStorage.getItem(id) === "read";
   isRead ? localStorage.removeItem(id) : localStorage.setItem(id, "read");
+  localStorage.setItem("lastRead", id);
   renderAll();
 }
 
@@ -124,7 +124,6 @@ function renderList(data, containerId) {
     const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
     const savedRating = localStorage.getItem(`rating_${item.id}`) || "Not rated";
 
-
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
@@ -148,6 +147,49 @@ function renderList(data, containerId) {
   });
 }
 
+// === Dashboard Rendering ===
+function renderDashboard(data) {
+  // Recently Read
+  const recentId = localStorage.getItem("lastRead");
+  const recentItem = data.find(item => item.id === recentId);
+  const recentList = document.querySelector("#recently-read ul");
+  recentList.innerHTML = "";
+  if (recentItem) {
+    const li = document.createElement("li");
+    li.textContent = recentItem.title;
+    recentList.appendChild(li);
+  }
+
+  // Top Rated
+  const rated = data
+    .map(item => {
+      const rating = parseInt(localStorage.getItem(`rating_${item.id}`));
+      return rating ? { ...item, rating } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 5);
+
+  const topRatedList = document.querySelector("#top-rated ul");
+  topRatedList.innerHTML = "";
+  rated.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.title} (${item.rating}/10)`;
+    topRatedList.appendChild(li);
+  });
+
+  // Most Bookmarked
+  const bookmarks = getBookmarks();
+  const bookmarkedItems = data.filter(item => bookmarks.includes(item.id)).slice(0, 5);
+  const bookmarkedList = document.querySelector("#most-bookmarked ul");
+  bookmarkedList.innerHTML = "";
+  bookmarkedItems.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item.title;
+    bookmarkedList.appendChild(li);
+  });
+}
+
 // === Firebase Fetch + Render ===
 async function fetchManhwaFromFirebase() {
   const snapshot = await db.collection("manhwa").get();
@@ -166,6 +208,8 @@ async function renderAll() {
   renderList(manhwaList.filter(m => statusMap[m.id] === "on_hold"), "status-onhold");
   renderList(manhwaList.filter(m => statusMap[m.id] === "dropped"), "status-dropped");
   renderList(manhwaList.filter(m => statusMap[m.id] === "wishlist"), "status-wishlist");
+
+  renderDashboard(manhwaList);
 }
 
 // === User Display ===
@@ -253,7 +297,6 @@ function updateProfileDisplay() {
   document.getElementById("userDisplay").textContent = `👋 Hello, ${username}`;
   document.getElementById("profilePic").src = avatar;
   document.getElementById("navAvatar").src = avatar;
-
 }
 
 // === Page Init ===
@@ -314,55 +357,5 @@ document.addEventListener("DOMContentLoaded", () => {
       img.addEventListener('load', () => img.classList.add('loaded'));
       if (img.complete) img.classList.add('loaded');
     });
-
-    function renderDashboard(data) {
-  const recentList = document.querySelector("#recently-read ul");
-  const topRatedList = document.querySelector("#top-rated ul");
-  const bookmarksList = document.querySelector("#most-bookmarked ul");
-
-  recentList.innerHTML = "";
-  topRatedList.innerHTML = "";
-  bookmarksList.innerHTML = "";
-
-  // Recently read (based on localStorage timestamps)
-  const recent = data
-    .map(item => ({
-      ...item,
-      time: localStorage.getItem(`readTime_${item.id}`) || 0
-    }))
-    .filter(m => m.time > 0)
-    .sort((a, b) => b.time - a.time)
-    .slice(0, 3);
-
-  recent.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = `${item.title}`;
-    recentList.appendChild(li);
-  });
-
-  // Top Rated
-  const rated = data
-    .map(item => ({
-      ...item,
-      rating: parseInt(localStorage.getItem(`rating_${item.id}`) || 0)
-    }))
-    .filter(m => m.rating > 0)
-    .sort((a, b) => b.rating - a.rating)
-    .slice(0, 3);
-
-  rated.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = `${item.title} (${item.rating}/10)`;
-    topRatedList.appendChild(li);
-  });
-
-  // Most Bookmarked
-  const bookmarks = getBookmarks();
-  const bookmarkedData = data.filter(m => bookmarks.includes(m.id)).slice(0, 3);
-  bookmarkedData.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = `${item.title}`;
-    bookmarksList.appendChild(li);
-  });
   }, 100);
 });
