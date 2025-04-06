@@ -56,6 +56,9 @@ button:hover {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 .card:hover {
   transform: translateY(-5px);
