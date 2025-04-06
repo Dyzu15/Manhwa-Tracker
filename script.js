@@ -127,22 +127,23 @@ function renderList(data, containerId) {
 
     const card = document.createElement("div");
     card.className = "card";
-    card.innerHTML = `
-     <img src="${item.cover}" alt="${item.title}" class="cover-image" data-click="popup" />
-      <h3>${item.title}</h3>
-      <p>Chapter ${savedChapter}</p>
-      <p>⭐ Rating: ${savedRating}</p>
-      <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
-      <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
-      <select onchange="updateStatus('${item.id}', this.value)">
-        <option value="">📂 Set Status</option>
-        <option value="reading">📖 Reading</option>
-        <option value="completed">🏁 Completed</option>
-        <option value="on_hold">⌛ On Hold</option>
-        <option value="dropped">❌ Dropped</option>
-        <option value="wishlist">💭 Wishlist</option>
-      </select>
-    `;
+   card.innerHTML = `
+  <img src="${item.cover}" alt="${item.title}" class="cover-image" style="cursor: pointer;" />
+  <h3>${item.title}</h3>
+  <p>Chapter ${savedChapter}</p>
+  <p>⭐ Rating: ${savedRating}</p>
+  <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
+  <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
+  <select onchange="updateStatus('${item.id}', this.value)">
+    <option value="">📂 Set Status</option>
+    <option value="reading">📖 Reading</option>
+    <option value="completed">🏁 Completed</option>
+    <option value="on_hold">⌛ On Hold</option>
+    <option value="dropped">❌ Dropped</option>
+    <option value="wishlist">💭 Wishlist</option>
+  </select>
+`;
+
     card.addEventListener("click", (e) => {
   const isInteractive =
     e.target.closest("button") ||
