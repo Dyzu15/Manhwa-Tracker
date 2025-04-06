@@ -556,6 +556,10 @@ footer {
   margin-bottom: 6px;
 }
 
+#dashboard {
+  margin-bottom: 40px;
+}
+
 /* Light theme dashboard override */
 body.light .dashboard-box {
   background-color: #fff;
