@@ -352,18 +352,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Image loading shimmer
-  setTimeout(() => {
+    setTimeout(() => {
     document.querySelectorAll('.card img').forEach(img => {
       img.addEventListener('load', () => img.classList.add('loaded'));
       if (img.complete) img.classList.add('loaded');
     });
+  }, 100);
+});
 
-    // === PWA Service Worker Registration ===
+// === PWA Service Worker Registration ===
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
       .then(reg => console.log('✅ Service Worker registered:', reg.scope))
       .catch(err => console.error('❌ Service Worker registration failed:', err));
   });
-}, 100);
-});
+}
+
