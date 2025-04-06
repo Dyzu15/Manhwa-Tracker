@@ -4,19 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="description" content="Track your favorite manhwa series with bookmarks, reading progress, and latest chapters.">
   <meta name="theme-color" content="#121212" />
-  
-  <!-- Apple iOS Support -->
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<link rel="apple-touch-icon" href="icons/icon-192.png" />
-<link rel="apple-touch-startup-image" href="splash/launch-640x1136.png" media="(device-width: 320px) and (device-height: 568px)">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Manhwa Tracker</title>
-  <link rel="stylesheet" href="./style.css" />
+
+  <!-- Apple iOS Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <!-- iOS Splash Screens -->
+  <link rel="apple-touch-startup-image" href="splash/launch-640x1136.png" media="(device-width: 320px) and (device-height: 568px)">
+  <link rel="apple-touch-startup-image" href="splash/launch-750x1334.png" media="(device-width: 375px) and (device-height: 667px)">
+  <link rel="apple-touch-startup-image" href="splash/launch-1242x2208.png" media="(device-width: 414px) and (device-height: 736px)">
+  <link rel="apple-touch-startup-image" href="splash/launch-1125x2436.png" media="(device-width: 375px) and (device-height: 812px)">
+  <link rel="apple-touch-startup-image" href="splash/launch-828x1792.png" media="(device-width: 414px) and (device-height: 896px)">
+  <link rel="apple-touch-startup-image" href="splash/launch-1242x2688.png" media="(device-width: 414px) and (device-height: 896px)">
+  <link rel="apple-touch-startup-image" href="splash/launch-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px)">
+  <link rel="apple-touch-startup-image" href="splash/launch-1668x2224.png" media="(device-width: 834px) and (device-height: 1112px)">
+  <link rel="apple-touch-startup-image" href="splash/launch-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px)">
+  <link rel="apple-touch-startup-image" href="splash/launch-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px)">
+
+  <!-- Icons and Manifest -->
   <link rel="icon" type="image/png" href="./icons/icon-192.png" />
   <link rel="manifest" href="./manifest.json" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
+
   <style>
     html { scroll-behavior: smooth; }
   </style>
@@ -50,8 +64,8 @@
       <button class="login-btn" id="loginBtn">Login</button>
       <button class="hidden" id="logoutBtn">Logout</button>
       <button id="profileBtn" class="avatar-button">
-  <img id="navAvatar" src="./icons/icon-192.png" alt="Profile" />
-</button>
+        <img id="navAvatar" src="./icons/icon-192.png" alt="Profile" />
+      </button>
       <span id="userDisplay" class="user-display hidden"></span>
     </div>
   </header>
@@ -76,22 +90,22 @@
     </section>
 
     <section id="dashboard">
-  <h2>📊 My Dashboard</h2>
-  <div class="dashboard-cards">
-    <div id="recently-read" class="dashboard-box">
-      <h3>📖 Recently Read</h3>
-      <ul></ul>
-    </div>
-    <div id="top-rated" class="dashboard-box">
-      <h3>⭐ Top Rated</h3>
-      <ul></ul>
-    </div>
-    <div id="most-bookmarked" class="dashboard-box">
-      <h3>📌 Most Bookmarked</h3>
-      <ul></ul>
-    </div>
-  </div>
-</section>
+      <h2>📊 My Dashboard</h2>
+      <div class="dashboard-cards">
+        <div id="recently-read" class="dashboard-box">
+          <h3>📖 Recently Read</h3>
+          <ul></ul>
+        </div>
+        <div id="top-rated" class="dashboard-box">
+          <h3>⭐ Top Rated</h3>
+          <ul></ul>
+        </div>
+        <div id="most-bookmarked" class="dashboard-box">
+          <h3>📌 Most Bookmarked</h3>
+          <ul></ul>
+        </div>
+      </div>
+    </section>
 
     <section id="popular">
       <h2>Popular Series</h2>
@@ -128,22 +142,19 @@
       <p id="popupChapter">Chapter</p>
       <label for="chapterInput">Update Chapter:</label>
       <label for="ratingInput">Your Rating (1–10):</label>
-      
-      
-<select id="ratingInput">
-  <option value="">⭐ Rate</option>
-  <option value="1">1/10</option>
-  <option value="2">2/10</option>
-  <option value="3">3/10</option>
-  <option value="4">4/10</option>
-  <option value="5">5/10</option>
-  <option value="6">6/10</option>
-  <option value="7">7/10</option>
-  <option value="8">8/10</option>
-  <option value="9">9/10</option>
-  <option value="10">10/10</option>
-</select>
-      
+      <select id="ratingInput">
+        <option value="">⭐ Rate</option>
+        <option value="1">1/10</option>
+        <option value="2">2/10</option>
+        <option value="3">3/10</option>
+        <option value="4">4/10</option>
+        <option value="5">5/10</option>
+        <option value="6">6/10</option>
+        <option value="7">7/10</option>
+        <option value="8">8/10</option>
+        <option value="9">9/10</option>
+        <option value="10">10/10</option>
+      </select>
       <button onclick="saveChapterProgress()">Save Progress</button>
       <p id="popupDescription">This is a placeholder synopsis.</p>
     </div>
@@ -157,46 +168,41 @@
       <button type="button" onclick="loginWithGoogle()">Sign in with Google</button>
     </div>
   </div>
-  
-<!-- Profile Modal -->
-<div id="profileModal" class="popup-overlay hidden">
-  <div class="popup">
-    <span class="close-btn" onclick="closeProfile()">×</span>
-    <h3>User Profile</h3>
-    <img id="profilePic" src="./icons/icon-192.png" alt="Profile Picture" width="100" style="border-radius: 50%;" />
-    <p id="profileName">Guest</p>
-    <ul>
-      <li>Total in Library: <span id="totalLibrary">0</span></li>
-      <li>Completed: <span id="totalCompleted">0</span></li>
-      <li>Dropped: <span id="totalDropped">0</span></li>
-      <li>
-    <button onclick="openEditProfile()">Edit Profile</button>
-  </li>
-    </ul>
-  </div>
-</div>
-<!-- 🔽 Add this right after above block -->
-<!-- Edit Profile Modal -->
-<div id="editProfileModal" class="popup-overlay hidden">
-  <div class="popup">
-    <span class="close-btn" onclick="closeEditProfile()">×</span>
-    <h3>Edit Profile</h3>
 
-    <label for="displayNameInput">Display Name:</label>
-    <input type="text" id="displayNameInput" placeholder="Enter your name" />
-
-    <label>Choose Avatar:</label>
-    <div class="avatar-options">
-      <img src="avatars/avatar1.png" class="avatar-option" onclick="selectAvatar(this)" />
-      <img src="avatars/avatar2.png" class="avatar-option" onclick="selectAvatar(this)" />
-      <img src="avatars/avatar3.png" class="avatar-option" onclick="selectAvatar(this)" />
+  <!-- Profile Modal -->
+  <div id="profileModal" class="popup-overlay hidden">
+    <div class="popup">
+      <span class="close-btn" onclick="closeProfile()">×</span>
+      <h3>User Profile</h3>
+      <img id="profilePic" src="./icons/icon-192.png" alt="Profile Picture" width="100" style="border-radius: 50%;" />
+      <p id="profileName">Guest</p>
+      <ul>
+        <li>Total in Library: <span id="totalLibrary">0</span></li>
+        <li>Completed: <span id="totalCompleted">0</span></li>
+        <li>Dropped: <span id="totalDropped">0</span></li>
+        <li><button onclick="openEditProfile()">Edit Profile</button></li>
+      </ul>
     </div>
-
-    <button onclick="saveProfileChanges()">Save Changes</button>
   </div>
-</div>
 
-  <!-- Scripts: Firebase Config & App -->
+  <!-- Edit Profile Modal -->
+  <div id="editProfileModal" class="popup-overlay hidden">
+    <div class="popup">
+      <span class="close-btn" onclick="closeEditProfile()">×</span>
+      <h3>Edit Profile</h3>
+      <label for="displayNameInput">Display Name:</label>
+      <input type="text" id="displayNameInput" placeholder="Enter your name" />
+      <label>Choose Avatar:</label>
+      <div class="avatar-options">
+        <img src="avatars/avatar1.png" class="avatar-option" onclick="selectAvatar(this)" />
+        <img src="avatars/avatar2.png" class="avatar-option" onclick="selectAvatar(this)" />
+        <img src="avatars/avatar3.png" class="avatar-option" onclick="selectAvatar(this)" />
+      </div>
+      <button onclick="saveProfileChanges()">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Firebase and App Script -->
   <script src="./firebase.js"></script>
   <script src="./firebase-auth.js"></script>
   <script src="./script.js"></script>
