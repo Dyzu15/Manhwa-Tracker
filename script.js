@@ -142,7 +142,13 @@ function renderList(data, containerId) {
         <option value="wishlist">💭 Wishlist</option>
       </select>
     `;
-    card.querySelector("img").addEventListener("click", () => openPopup(item));
+    card.addEventListener("click", (e) => {
+  // Prevent triggering popup when clicking buttons or select
+  if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT') {
+    openPopup(item);
+  }
+});
+
     container.appendChild(card);
   });
 }
