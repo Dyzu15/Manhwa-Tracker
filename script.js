@@ -128,6 +128,7 @@ function renderList(data, containerId) {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
+     <img src="${item.cover}" alt="${item.title}" class="cover-image" data-click="popup" />
       <h3>${item.title}</h3>
       <p>Chapter ${savedChapter}</p>
       <p>⭐ Rating: ${savedRating}</p>
