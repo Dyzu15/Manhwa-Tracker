@@ -350,6 +350,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
   showLoggedInUser();
   renderAll();
+
+  const addManhwaForm = document.getElementById("addManhwaForm");
+if (addManhwaForm) {
+  addManhwaForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById("titleInput").value.trim();
+    const genre = document.getElementById("genreInput").value.trim().toLowerCase();
+    const cover = document.getElementById("coverInput").value.trim();
+    const description = document.getElementById("descriptionInput").value.trim();
+    const chapter = document.getElementById("chapterInput").value.trim();
+    const statusMsg = document.getElementById("adminStatusMsg");
+
+    if (!title || !genre || !cover || !chapter) {
+      statusMsg.textContent = "❌ Please fill in all required fields.";
+      return;
+    }
+
+    try {
+      await db.collection("manhwa").add({
+        title,
+        genre,
+        cover,
+        chapter: parseInt(chapter),
+        description
+      });
+
+      statusMsg.textContent = "✅ Manhwa added successfully!";
+      addManhwaForm.reset();
+      renderAll();
+    } catch (error) {
+      console.error("Error adding manhwa:", error);
+      statusMsg.textContent = "❌ Failed to add manhwa.";
+    }
+  });
+}
   
 document.getElementById("searchInput").addEventListener("input", () => {
   renderAll();
