@@ -341,6 +341,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   showLoggedInUser();
   renderAll();
+  
+document.getElementById("searchInput").addEventListener("input", () => {
+  renderAll();
+});
 
   const profileBtn = document.getElementById("profileBtn");
   if (profileBtn) {
