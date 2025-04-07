@@ -47,7 +47,7 @@ function openPopup(item) {
   const savedRating = localStorage.getItem(`rating_${item.id}`) || "";
 
   const ratingInput = document.getElementById("ratingInput");
-  const chapterInput = document.getElementById("chapterInput");
+  const chapterInput = document.getElementById("popupChapterInput");
 
   if (ratingInput) ratingInput.value = savedRating;
   if (chapterInput) chapterInput.value = savedChapter;
