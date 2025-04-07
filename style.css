@@ -228,6 +228,35 @@ button:hover {
   z-index: -1;
   animation: zoomInOut 12s cubic-bezier(0.25, 0.8, 0.25, 1) infinite alternate;
 }
+
+/* ========== Section-Specific Backgrounds ========== */
+body.section-home {
+  background-image: url('./backgrounds/bg-home.jpg');
+}
+
+body.section-my-library {
+  background-image: url('./backgrounds/bg-my-library.jpg');
+}
+
+body.section-popular {
+  background-image: url('./backgrounds/bg-popular.jpg');
+}
+
+body.section-new {
+  background-image: url('./backgrounds/bg-new.jpg');
+}
+
+body.section-dashboard {
+  background-image: url('./backgrounds/bg-dashboard.jpg');
+}
+
+body[class^="section-"] {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 @keyframes zoomInOut {
   0% { transform: scale(1); opacity: 0.9; }
   100% { transform: scale(1.05); opacity: 1; }
