@@ -363,7 +363,8 @@ document.addEventListener("DOMContentLoaded", () => {
   showLoggedInUser();
   renderAll();
 
-  const addManhwaForm = document.getElementById("addManhwaForm");
+ const addManhwaForm = document.getElementById("addManhwaForm");
+
 if (addManhwaForm) {
   addManhwaForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -385,13 +386,14 @@ if (addManhwaForm) {
         title,
         genre,
         cover,
+        description,
         chapter: parseInt(chapter),
-        description
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       statusMsg.textContent = "✅ Manhwa added successfully!";
       addManhwaForm.reset();
-      renderAll();
+      renderAll(); // refresh UI
     } catch (error) {
       console.error("Error adding manhwa:", error);
       statusMsg.textContent = "❌ Failed to add manhwa.";
