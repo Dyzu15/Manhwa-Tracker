@@ -65,7 +65,7 @@ function closePopup() {
 }
 
 function saveChapterProgress() {
-  const newChapter = document.getElementById("chapterInput").value;
+  const newChapter = document.getElementById("popupChapterInput").value;
   const newRating = document.getElementById("ratingInput").value;
 
   if (currentPopupId && newChapter && Number(newChapter) > 0) {
