@@ -235,6 +235,8 @@ async function renderAll() {
 
   renderDashboard(manhwaList);
 }
+// === Admin Email Config ===
+const adminEmail = "tacpack10@gmail.com";
 
 // === User Display ===
 function showLoggedInUser() {
