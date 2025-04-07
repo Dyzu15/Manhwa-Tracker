@@ -241,17 +241,27 @@ const adminEmail = "tacpack10@gmail.com";
 // === User Display ===
 function showLoggedInUser() {
   updateProfileDisplay();
+
   const username = localStorage.getItem("username");
+  const email = localStorage.getItem("userEmail"); // get from localStorage after login
   const userDisplay = document.getElementById("userDisplay");
+  const adminPanel = document.getElementById("admin-panel");
+
   if (userDisplay) {
     if (username) {
       userDisplay.textContent = `👋 Hello, ${username}`;
       userDisplay.classList.remove("hidden");
+
+      // 👑 Show admin panel if email matches
+      if (email === adminEmail && adminPanel) {
+        adminPanel.classList.remove("hidden");
+      }
     } else {
       userDisplay.classList.add("hidden");
     }
   }
 }
+
 
 // === Profile Modal Functions ===
 function openProfile() {
