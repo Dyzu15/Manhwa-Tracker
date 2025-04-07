@@ -135,20 +135,22 @@
   <!-- Footer -->
   <footer>
     <p>&copy; 2025 Manhwa Tracker</p>
-    <!-- Admin Panel -->
+  </footer>
+
+  <!-- Admin Panel -->
 <section id="admin-panel" class="hidden">
   <h2>Admin Panel – Add New Manhwa</h2>
   <form id="addManhwaForm">
     <input type="text" id="titleInput" placeholder="Title" required />
     <input type="text" id="genreInput" placeholder="Genre (e.g. action)" required />
     <input type="text" id="coverInput" placeholder="Cover Image URL" required />
-    <textarea id="descriptionInput" placeholder="Description"></textarea>
+    <textarea id="descriptionInput" placeholder="Description (optional)"></textarea>
     <input type="number" id="chapterInput" placeholder="Starting Chapter" required />
     <button type="submit">Add Manhwa</button>
   </form>
   <p id="adminStatusMsg"></p>
 </section>
-  </footer>
+
 
 <!-- Popup Modal -->
 <div id="popupOverlay" class="popup-overlay hidden">
