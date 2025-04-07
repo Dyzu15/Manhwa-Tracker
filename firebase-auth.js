@@ -19,8 +19,8 @@ function loginWithGoogle() {
     .then(result => {
       const user = result.user;
       if (user) {
-        localStorage.setItem("username", user.displayName);
-        localStorage.setItem("userEmail", user.email);
+      localStorage.setItem("username", user.displayName || "User");
+      localStorage.setItem("userEmail", user.email || "");
       }
       closeLogin();
       showLoggedInUser(); // Refresh user display and admin check
