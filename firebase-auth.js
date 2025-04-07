@@ -17,7 +17,13 @@ function loginWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
     .then(result => {
+      const user = result.user;
+      if (user) {
+        localStorage.setItem("username", user.displayName);
+        localStorage.setItem("userEmail", user.email);
+      }
       closeLogin();
+      showLoggedInUser(); // Refresh user display and admin check
     })
     .catch(error => {
       console.error("Login Error:", error);
@@ -27,20 +33,34 @@ function loginWithGoogle() {
 
 // === Logout ===
 logoutBtn.addEventListener('click', () => {
-  auth.signOut();
+  auth.signOut().then(() => {
+    localStorage.removeItem("username");
+    localStorage.removeItem("userEmail");
+    showLoggedInUser(); // Refresh UI on logout
+  });
 });
 
 // === Auth UI Updates ===
 auth.onAuthStateChanged(user => {
   if (user) {
+    localStorage.setItem("username", user.displayName);
+    localStorage.setItem("userEmail", user.email);
+
     loginBtn.classList.add('hidden');
     logoutBtn.classList.remove('hidden');
     userDisplay.textContent = `👋 Hello, ${user.displayName}`;
     userDisplay.classList.remove('hidden');
+
+    showLoggedInUser(); // Trigger admin visibility check
   } else {
     loginBtn.classList.remove('hidden');
     logoutBtn.classList.add('hidden');
     userDisplay.classList.add('hidden');
+
+    localStorage.removeItem("username");
+    localStorage.removeItem("userEmail");
+
+    showLoggedInUser(); // Reset UI
   }
 });
 
