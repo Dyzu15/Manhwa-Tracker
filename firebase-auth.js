@@ -43,8 +43,8 @@ logoutBtn.addEventListener('click', () => {
 // === Auth UI Updates ===
 auth.onAuthStateChanged(user => {
   if (user) {
-    localStorage.setItem("username", user.displayName);
-    localStorage.setItem("userEmail", user.email);
+  localStorage.setItem("username", user.displayName || "User");
+  localStorage.setItem("userEmail", user.email || "");
 
     loginBtn.classList.add('hidden');
     logoutBtn.classList.remove('hidden');
