@@ -18,8 +18,17 @@ function showSection(sectionId) {
     link.classList.toggle("active-link", link.getAttribute("href") === `#${sectionId}`);
   });
 
+  // 🔁 Set dynamic background based on section
+  document.body.className = document.body.className
+    .split(' ')
+    .filter(cls => !cls.startsWith('section-'))
+    .join(' ')
+    .trim();
+  document.body.classList.add(`section-${sectionId}`);
+
   localStorage.setItem("lastSection", sectionId);
 }
+
 
 navLinks.forEach(link => {
   link.addEventListener("click", e => {
