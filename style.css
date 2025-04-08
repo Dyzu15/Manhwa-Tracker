@@ -253,13 +253,15 @@ body[class^="section-"] {
 
 @media (max-width: 768px) {
   body.section-home {
+    min-height: 100vh;
     background-image: url('./backgrounds/background-mobile2x.jpg');
-    background-size: auto 100vh;
-    background-position: top center;
+    background-size: cover;
+    background-position: center center;
     background-repeat: no-repeat;
     background-attachment: scroll;
   }
 }
+
 
 
 /* ========== Modal / Popup ========== */
