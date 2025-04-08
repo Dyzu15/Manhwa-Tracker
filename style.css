@@ -1014,9 +1014,13 @@ document.getElementById("postCommentBtn").addEventListener("click", () => {
   });
 });
 
-/* For Buy Me A Coffee Button */
+/* Your existing styles here */
+
+/* Buy Me A Coffee Button CSS */
 .buy-coffee-button img {
-  width: 150px; /* Adjust the width to make the button smaller */
-  height: auto; /* Ensure the height maintains its aspect ratio */
+  width: 150px;  /* Adjust the width to make the button smaller */
+  height: auto;  /* Maintain the aspect ratio */
+  border-radius: 8px; /* Optional: for rounded corners */
 }
+
 
