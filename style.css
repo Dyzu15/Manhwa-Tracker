@@ -837,6 +837,22 @@ body.light .dashboard-box ul {
   border-color: #facc15; /* yellow accent */
 }
 
+/* === Add this at the bottom of your CSS === */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 0.5rem;
+}
+
+.tag-list .tag {
+  background-color: #3b3b3b;
+  color: #facc15;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}
+
 document.getElementById("postCommentBtn").addEventListener("click", () => {
   const message = document.getElementById("commentInput").value.trim();
   if (!message || !currentPopupId) return;
