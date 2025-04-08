@@ -82,18 +82,18 @@ function openPopup(item) {
   if (ratingInput) ratingInput.value = savedRating;
   if (chapterInput) chapterInput.value = savedChapter;
   
-  // Render tags
-const tagList = document.getElementById("popupTags");
-if (tagList && Array.isArray(item.tags)) {
-  tagList.innerHTML = "";
-  item.tags.forEach(tag => {
-    const span = document.createElement("span");
-    span.className = "tag";
-    span.textContent = tag;
-    tagList.appendChild(span);
-  });
-}
-
+  // Render saved tags from localStorage
+  const savedTags = JSON.parse(localStorage.getItem(`tags_${currentPopupId}`)) || [];
+  const tagList = document.getElementById("popupTags");
+  if (tagList && Array.isArray(savedTags)) {
+    tagList.innerHTML = "";  // Clear existing tags
+    savedTags.forEach(tag => {
+      const span = document.createElement("span");
+      span.className = "tag";
+      span.textContent = tag;
+      tagList.appendChild(span);
+    });
+  }
 
   document.getElementById("popupCover").src = item.cover;
   document.getElementById("popupTitle").textContent = item.title;
