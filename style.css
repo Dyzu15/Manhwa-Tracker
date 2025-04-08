@@ -361,6 +361,7 @@ body[class^="section-"] {
   max-height: 180px;
   overflow-y: auto;
   font-size: 0.9rem;
+  margin-bottom: 1rem; /* Added margin for better spacing */
 }
 
 .close-btn {
@@ -384,6 +385,57 @@ body[class^="section-"] {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* Tablet/Desktop layout split */
+@media (min-width: 768px) {
+  .popup {
+    flex-direction: row;
+    gap: 2rem;
+  }
+
+  .popup-left,
+  .popup-right {
+    flex: 1 1 45%;
+    min-width: 280px;
+  }
+
+  .popup h3 {
+    text-align: left;
+    font-size: 1.3rem;
+  }
+
+  /* Add some margin between the two sections of the popup for better layout */
+  .popup-left {
+    margin-right: 1rem;
+  }
+}
+
+/* Small screen tweaks */
+@media (max-width: 480px) {
+  .popup {
+    padding: 1rem;
+  }
+
+  .popup img {
+    max-width: 120px;
+  }
+
+  .popup button {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .popup input,
+  .popup select,
+  .popup textarea {
+    font-size: 0.9rem;
+  }
+
+  /* Slight adjustments for better vertical space on smaller screens */
+  .popup-left, .popup-right {
+    flex: 1;
   }
 }
 
