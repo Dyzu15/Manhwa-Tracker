@@ -254,8 +254,8 @@ body[class^="section-"] {
 @media (max-width: 768px) {
   body[class^="section-"] {
     background-attachment: scroll;
-    background-position: top;
-    background-size: cover;
+    background-position: center top;
+    background-size: contain;
     background-repeat: no-repeat;
   }
 }
