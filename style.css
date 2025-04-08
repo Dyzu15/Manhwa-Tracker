@@ -734,8 +734,9 @@ footer {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.75);
-  align-items: center;
+  display: flex;
   justify-content: center;
+  align-items: center;
   z-index: 999;
 }
 
@@ -747,69 +748,75 @@ footer {
   display: flex;
 }
 
-/* Popup container styling */
 #profileModal .popup {
   background: #1e1e1e;
   color: white;
-  padding: 25px 30px;
-  border-radius: 12px;
-  max-width: 400px; /* Increased max-width for more spacious layout */
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 350px;
   width: 90%;
   text-align: center;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Profile image adjustments */
 #profileModal .popup img {
-  margin-bottom: 15px; /* Increased margin for better spacing */
-  border: 3px solid #ffd000; /* Border styling for the image */
+  margin-bottom: 20px;
+  border: 2px solid #ffd000;
+  width: 100px; /* Adjust size */
+  height: 100px; /* Adjust size */
   border-radius: 50%;
-  width: 120px; /* Adjusted to fit well within the modal */
-  height: 120px; /* Same height for balance */
   object-fit: cover;
 }
 
-/* List styling inside the popup */
+#profileModal .popup h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
 #profileModal .popup ul {
   list-style: none;
   padding: 0;
-  margin-top: 20px;
+  margin: 10px 0 20px;
   text-align: left;
-  font-size: 16px;
-  color: #ccc; /* Lighter color for list items */
+  width: 100%;
 }
 
 #profileModal .popup ul li {
-  padding: 10px 0;
-  font-size: 1rem; /* Slightly bigger text for readability */
+  padding: 5px 0;
+  font-size: 16px;
 }
 
-/* Avatar selection section */
+#profileModal .popup .stats {
+  font-size: 14px;
+  color: #f0a500;
+  margin-bottom: 20px;
+}
+
 .avatar-options {
   display: flex;
   justify-content: center;
-  gap: 12px; /* Slightly larger gap for better spacing */
-  margin: 15px 0;
+  gap: 10px;
+  margin: 10px 0;
   flex-wrap: wrap;
 }
 
-/* Styling for avatar options */
 .avatar-option {
-  width: 70px; /* Increased size for avatars */
-  height: 70px; /* Same height for balance */
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid transparent;
+  border: 2px solid transparent;
   cursor: pointer;
   transition: border-color 0.3s ease;
 }
 
-/* Selected avatar styling */
 .avatar-option.selected {
-  border-color: #f0a500; /* Border color when selected */
+  border-color: #f0a500;
 }
 
-/* Profile button for avatar change */
 .avatar-button {
   background: none;
   border: none;
@@ -817,13 +824,29 @@ footer {
   cursor: pointer;
 }
 
-/* Navigation avatar styling (for smaller version in navbar) */
 #navAvatar {
-  width: 40px; /* Adjusted size for navbar */
-  height: 40px; /* Same height for balance */
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #f0a500;
+}
+
+/* Edit button style */
+#profileModal .popup button {
+  background-color: #facc15;
+  color: #000;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+#profileModal .popup button:hover {
+  background-color: #eab308;
 }
 
 /* ========== Dashboard Section ========== */
