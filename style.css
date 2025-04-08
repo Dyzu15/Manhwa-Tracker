@@ -217,19 +217,6 @@ button:hover {
   }
 }
 
-/* ========== Background Overlay Animation ========== */
-.background-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  min-height: 100%;
-  background-image: url('background.jpg'); /* or per-section background */
-  background-size: cover;
-  background-position: top center;
-  background-repeat: no-repeat;
-  z-index: -1;
-}
 
 /* ========== Section-Specific Backgrounds ========== */
 body.section-home {
