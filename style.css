@@ -277,35 +277,34 @@ body[class^="section-"] {
 }
 
 .popup {
-  background: rgba(31, 31, 31, 0.9);
+  background: rgba(31, 31, 31, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 2rem;
-  width: 90%;
-  max-width: 900px;
-  border-radius: 12px;
+  width: 100%;
+  max-width: 1000px;
+  border-radius: 16px;
   color: #fff;
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
   animation: popupExpand 0.3s ease-in-out;
   position: relative;
 }
 
-@keyframes popupExpand {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.popup-left,
+.popup-right {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 280px;
 }
 
-.popup img {
-  max-width: 180px;
+.popup-left img {
+  max-width: 100%;
   max-height: 250px;
   object-fit: cover;
   border-radius: 8px;
@@ -321,7 +320,7 @@ body[class^="section-"] {
   border: 1px solid #444;
   border-radius: 6px;
   padding: 10px;
-  margin-top: 8px;
+  margin-top: 6px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -330,7 +329,7 @@ body[class^="section-"] {
   background-color: #facc15;
   color: #000;
   border: none;
-  padding: 10px 16px;
+  padding: 12px;
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
@@ -339,6 +338,18 @@ body[class^="section-"] {
 
 .popup button:hover {
   background-color: #eab308;
+}
+
+#commentsList {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 6px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+#commentInput {
+  resize: none;
 }
 
 .close-btn {
@@ -352,6 +363,23 @@ body[class^="section-"] {
 
 .hidden {
   display: none;
+}
+
+@keyframes popupExpand {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .popup {
+    flex-direction: column;
+  }
 }
 
 /* ========== Theme Toggle ========== */
