@@ -253,12 +253,11 @@ body[class^="section-"] {
 
 @media (max-width: 768px) {
   body[class^="section-"] {
-    background-image: url('./backgrounds/background-mobile@2x.jpg');
+    background-image: url('./backgrounds/bg-home.jpg'); /* or background.jpg */
     background-attachment: scroll;
-    background-position: center top;
-    background-size: contain; /* or try 'auto 100vh' */
+    background-position: top center;
+    background-size: cover;
     background-repeat: no-repeat;
-    min-height: 100vh;
   }
 }
 
