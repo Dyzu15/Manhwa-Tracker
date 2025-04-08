@@ -253,13 +253,15 @@ body[class^="section-"] {
 
 @media (max-width: 768px) {
   body[class^="section-"] {
-    background-image: url('./backgrounds/bg-home.jpg'); /* or background.jpg */
+    background-image: url('./backgrounds/background-mobile@2x.jpg');
     background-attachment: scroll;
-    background-position: top center;
+    background-position: center top;
     background-size: cover;
     background-repeat: no-repeat;
+    min-height: 100vh;
   }
 }
+
 
 /* ========== Modal / Popup ========== */
 .popup-overlay {
