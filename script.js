@@ -38,6 +38,36 @@ navLinks.forEach(link => {
   });
 });
 
+// Function to save tags when the user clicks "Save Tags"
+function saveTags() {
+  if (!currentPopupId) return; // Ensure there's a valid item ID
+
+  const tagsInput = document.getElementById("tagInput");  // Get tag input
+  const newTags = tagsInput.value.trim().split(",").map(tag => tag.trim()).filter(tag => tag);
+
+  // Get saved tags from localStorage or an empty array
+  let savedTags = JSON.parse(localStorage.getItem(`tags_${currentPopupId}`)) || [];
+  
+  // Merge new tags with existing ones, ensuring no duplicates
+  savedTags = [...new Set([...savedTags, ...newTags])];
+
+  // Save updated tags back to localStorage
+  localStorage.setItem(`tags_${currentPopupId}`, JSON.stringify(savedTags));
+
+  // Render the updated tags in the popup
+  const tagList = document.getElementById("tagList");
+  tagList.innerHTML = ""; // Clear existing tags
+  savedTags.forEach(tag => {
+    const span = document.createElement("span");
+    span.className = "tag";
+    span.textContent = tag;
+    tagList.appendChild(span);
+  });
+
+  tagsInput.value = "";  // Clear the input field after saving
+}
+
+
 // === Popup ===
 let currentPopupId = null;
 
