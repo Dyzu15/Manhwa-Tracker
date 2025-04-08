@@ -255,7 +255,7 @@ body[class^="section-"] {
   body[class^="section-"] {
     background-attachment: scroll;
     background-position: top;
-    background-size: 100% auto;
+    background-size: cover;
     background-repeat: no-repeat;
   }
 }
