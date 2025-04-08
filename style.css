@@ -117,9 +117,6 @@ button:hover {
   padding: 20px;
 }
 
-.card-list::-webkit-scrollbar {
-  display: none;
-}
 
 /* ========== Navbar ========== */
 .navbar {
@@ -1027,6 +1024,25 @@ document.getElementById("postCommentBtn").addEventListener("click", () => {
     width: 110px; /* Smaller button on smaller screens */
   }
 }
+
+@media (max-width: 1024px) {
+  .card-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .card-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .card-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 
 
