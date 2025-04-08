@@ -60,10 +60,6 @@ function openPopup(item) {
   loadComments(item.id); // load comments based on the clicked manhwa
 }
 
-function closePopup() {
-  document.getElementById("popupOverlay").classList.add("hidden");
-}
-
 function loadComments(seriesId) {
   const commentsList = document.getElementById("commentsList");
   commentsList.innerHTML = "Loading comments...";
