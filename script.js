@@ -57,6 +57,7 @@ function openPopup(item) {
   document.getElementById("popupChapter").textContent = `Current: Chapter ${savedChapter}`;
   document.getElementById("popupDescription").textContent = item.description || "No description available.";
   document.getElementById("popupOverlay").classList.remove("hidden");
+  loadComments(item.id); // load comments based on the clicked manhwa
 }
 
 
