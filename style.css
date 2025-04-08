@@ -253,7 +253,6 @@ body[class^="section-"] {
 
 @media (max-width: 768px) {
   body.section-home {
-    min-height: 100vh;
     background-image: url('./backgrounds/background-mobile2x.jpg');
     background-size: contain;
     background-position: auto;
