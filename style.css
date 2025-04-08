@@ -258,6 +258,15 @@ body[class^="section-"] {
   100% { transform: scale(1.05); opacity: 1; }
 }
 
+@media (max-width: 768px) {
+  body[class^="section-"] {
+    background-attachment: scroll;
+    background-position: top center;
+    background-size: cover;
+  }
+}
+
+
 /* ========== Modal / Popup ========== */
 .popup-overlay {
   position: fixed;
