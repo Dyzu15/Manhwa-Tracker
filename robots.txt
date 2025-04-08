@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dyzu15.github.io/Manhwa-Tracker/sitemap.xml
