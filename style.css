@@ -1016,18 +1016,19 @@ document.getElementById("postCommentBtn").addEventListener("click", () => {
 
 /* Buy Me A Coffee Button CSS */
 .buy-coffee-button img {
-  width: 40px; /* Adjust the width further to make the button smaller */
-  height: auto; /* Maintain the aspect ratio */
-  border-radius: 8px; /* Optional: for rounded corners */
-  margin-left: 10px; /* Optional: Add some spacing to the left */
+  width: 130px; /* Adjust for desktop size */
+  height: auto;
+  border-radius: 8px;
+  margin-left: 10px; /* Optional: spacing */
 }
 
-/* Adjust for mobile responsiveness */
+/* Adjust the width for smaller screens */
 @media (max-width: 768px) {
   .buy-coffee-button img {
-    width: 100px; /* Smaller button on smaller screens */
+    width: 110px; /* Smaller button on smaller screens */
   }
 }
+
 
 
 
