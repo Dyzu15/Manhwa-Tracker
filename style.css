@@ -111,13 +111,12 @@ button:hover {
 
 /* ========== Card Container ========== */
 .card-list {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  padding: 10px 0;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  padding: 20px;
 }
+
 .card-list::-webkit-scrollbar {
   display: none;
 }
