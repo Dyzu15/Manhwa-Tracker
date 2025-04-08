@@ -261,10 +261,12 @@ body[class^="section-"] {
 @media (max-width: 768px) {
   body[class^="section-"] {
     background-attachment: scroll;
-    background-position: top center;
-    background-size: cover;
+    background-position: top;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
   }
 }
+
 
 
 /* ========== Modal / Popup ========== */
