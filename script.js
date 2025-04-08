@@ -51,6 +51,19 @@ function openPopup(item) {
 
   if (ratingInput) ratingInput.value = savedRating;
   if (chapterInput) chapterInput.value = savedChapter;
+  
+  // Render tags
+const tagList = document.getElementById("popupTags");
+if (tagList && Array.isArray(item.tags)) {
+  tagList.innerHTML = "";
+  item.tags.forEach(tag => {
+    const span = document.createElement("span");
+    span.className = "tag";
+    span.textContent = tag;
+    tagList.appendChild(span);
+  });
+}
+
 
   document.getElementById("popupCover").src = item.cover;
   document.getElementById("popupTitle").textContent = item.title;
