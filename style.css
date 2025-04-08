@@ -1016,7 +1016,7 @@ document.getElementById("postCommentBtn").addEventListener("click", () => {
 
 /* Buy Me A Coffee Button CSS */
 .buy-coffee-button img {
-  width: 120px; /* Adjust the width further to make the button smaller */
+  width: 40px; /* Adjust the width further to make the button smaller */
   height: auto; /* Maintain the aspect ratio */
   border-radius: 8px; /* Optional: for rounded corners */
   margin-left: 10px; /* Optional: Add some spacing to the left */
