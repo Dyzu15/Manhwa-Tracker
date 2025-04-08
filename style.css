@@ -262,7 +262,7 @@ body[class^="section-"] {
   100% { transform: scale(1.05); opacity: 1; }
 }
 
-/* ========== Modal / Popup ========== */ 
+/* ========== Modal / Popup ========== */
 .popup-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -271,7 +271,7 @@ body[class^="section-"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1rem;
   overflow-y: auto;
   z-index: 1000;
 }
@@ -280,35 +280,36 @@ body[class^="section-"] {
   background: rgba(31, 31, 31, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 2rem;
+  padding: 1.5rem;
   width: 100%;
-  max-width: 1000px;
-  border-radius: 16px;
+  max-width: 900px;
+  border-radius: 14px;
   color: #fff;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 2rem;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
-  animation: popupExpand 0.3s ease-in-out;
-  position: relative;
-}
-
-.popup-left,
-.popup-right {
-  flex: 1 1 45%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-width: 280px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+  animation: popupExpand 0.3s ease-in-out;
+  position: relative;
+  box-sizing: border-box;
 }
 
-.popup-left img {
-  max-width: 100%;
-  max-height: 250px;
+.popup img {
+  max-width: 140px;
+  max-height: 200px;
   object-fit: cover;
   border-radius: 8px;
   margin: 0 auto;
+}
+
+.popup h3 {
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.popup p,
+.popup label {
+  font-size: 0.95rem;
 }
 
 .popup input[type="number"],
@@ -320,9 +321,13 @@ body[class^="section-"] {
   border: 1px solid #444;
   border-radius: 6px;
   padding: 10px;
-  margin-top: 6px;
   width: 100%;
   box-sizing: border-box;
+  font-size: 0.95rem;
+}
+
+.popup textarea {
+  resize: none;
 }
 
 .popup button {
@@ -333,7 +338,9 @@ body[class^="section-"] {
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
+  width: 100%;
   transition: background 0.3s ease;
+  font-size: 0.95rem;
 }
 
 .popup button:hover {
@@ -344,12 +351,9 @@ body[class^="section-"] {
   background-color: rgba(255, 255, 255, 0.05);
   padding: 1rem;
   border-radius: 6px;
-  max-height: 250px;
+  max-height: 200px;
   overflow-y: auto;
-}
-
-#commentInput {
-  resize: none;
+  font-size: 0.9rem;
 }
 
 .close-btn {
@@ -376,9 +380,24 @@ body[class^="section-"] {
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .popup {
+    flex-direction: row;
+    gap: 2rem;
+  }
+
+  .popup-left,
+  .popup-right {
+    flex: 1 1 45%;
+    display: flex;
     flex-direction: column;
+    gap: 1rem;
+    min-width: 280px;
+  }
+
+  .popup h3 {
+    text-align: left;
+    font-size: 1.3rem;
   }
 }
 
