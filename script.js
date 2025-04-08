@@ -505,6 +505,27 @@ document.getElementById("sortBy").addEventListener("change", () => {
       if (img.complete) img.classList.add('loaded');
     });
   }, 100);
+    // === Post Comment Handler ===
+  document.getElementById("postCommentBtn").addEventListener("click", async () => {
+    const message = document.getElementById("commentInput").value.trim();
+    if (!message || !currentPopupId) return;
+
+    const username = localStorage.getItem("username") || "Guest";
+
+    try {
+      await db.collection("comments").add({
+        seriesId: currentPopupId,
+        user: username,
+        message: message,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      document.getElementById("commentInput").value = "";
+      loadComments(currentPopupId);
+    } catch (error) {
+      console.error("❌ Failed to post comment:", error);
+    }
+  });
 });
 
 // === PWA Service Worker Registration ===
