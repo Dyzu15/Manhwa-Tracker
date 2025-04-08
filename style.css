@@ -262,54 +262,94 @@ body[class^="section-"] {
   100% { transform: scale(1.05); opacity: 1; }
 }
 
-/* ========== Modal / Popup ========== */
+/* ========== Modal / Popup ========== */ 
 .popup-overlay {
   position: fixed;
   top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2rem;
+  overflow-y: auto;
   z-index: 1000;
 }
+
 .popup {
-  background: rgba(31, 31, 31, 0.75);
+  background: rgba(31, 31, 31, 0.9);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 20px;
-  width: 300px;
-  border-radius: 8px;
-  text-align: center;
+  padding: 2rem;
+  width: 90%;
+  max-width: 900px;
+  border-radius: 12px;
   color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+  animation: popupExpand 0.3s ease-in-out;
+  position: relative;
 }
+
+@keyframes popupExpand {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .popup img {
-  max-width: 100%;
-  max-height: 200px;
+  max-width: 180px;
+  max-height: 250px;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 12px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
 }
+
 .popup input[type="number"],
-.popup input[type="text"] {
+.popup input[type="text"],
+.popup select,
+.popup textarea {
   background-color: #2c2c2c;
   color: #fff;
-  border: 1px solid #555;
-  border-radius: 4px;
-  padding: 8px;
-  margin: 10px 0;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 8px;
   width: 100%;
+  box-sizing: border-box;
 }
+
+.popup button {
+  background-color: #facc15;
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.popup button:hover {
+  background-color: #eab308;
+}
+
 .close-btn {
   position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 24px;
+  top: 12px;
+  right: 16px;
+  font-size: 28px;
+  color: #fff;
   cursor: pointer;
 }
+
 .hidden {
   display: none;
 }
