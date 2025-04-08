@@ -210,52 +210,23 @@ function getStatus(id) {
 }
 
 // === Render Cards ===
+function renderList(data, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = ""; // Clear the container before rendering new items
 
-function renderDashboard(data) {
-  const recentId = localStorage.getItem("lastRead");
-  const recentItem = data.find(item => item.id === recentId);
-  const recentList = document.querySelector("#recently-read ul");
-  const recentStats = document.getElementById("recentStats");
-  recentList.innerHTML = "";
-  
-  if (recentItem) {
-    const li = document.createElement("li");
-    li.textContent = recentItem.title;
-    recentList.appendChild(li);
-  }
-  recentStats.textContent = `Total Recently Read: ${recentList.children.length}`;
+  const genreValue = document.getElementById("genreFilter")?.value.toLowerCase() || "all";
+  const statusValue = document.getElementById("statusFilter")?.value || "all";
+  const sortValue = document.getElementById("sortBy")?.value || "default";
+  const keyword = document.getElementById("searchInput")?.value.toLowerCase() || "";
 
-  const rated = data
-    .map(item => {
-      const rating = parseInt(localStorage.getItem(`rating_${item.id}`));
-      return rating ? { ...item, rating } : null;
-    })
-    .filter(Boolean)
-    .sort((a, b) => b.rating - a.rating)
-    .slice(0, 5);
-
-  const topRatedList = document.querySelector("#top-rated ul");
-  const topRatedStats = document.getElementById("topRatedStats");
-  topRatedList.innerHTML = "";
-  rated.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = `${item.title} (${item.rating}/10)`;
-    topRatedList.appendChild(li);
+  let filtered = data.filter(item => {
+    const matchesGenre = genreValue === "all" || item.genre.toLowerCase() === genreValue;
+    const matchesSearch = !keyword || item.title.toLowerCase().includes(keyword);
+    const savedStatus = getStatus(item.id);
+    const matchesStatus = statusValue === "all" || savedStatus === statusValue;
+    return matchesGenre && matchesSearch && matchesStatus;
   });
-  topRatedStats.textContent = `Top Rated: ${rated.length}`;
-
-  const bookmarks = getBookmarks();
-  const bookmarkedItems = data.filter(item => bookmarks.includes(item.id)).slice(0, 5);
-  const bookmarkedList = document.querySelector("#most-bookmarked ul");
-  const bookmarkedStats = document.getElementById("bookmarkedStats");
-  bookmarkedList.innerHTML = "";
-  bookmarkedItems.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = item.title;
-    bookmarkedList.appendChild(li);
-  });
-  bookmarkedStats.textContent = `Most Bookmarked: ${bookmarkedItems.length}`;
-}
 
   // Sort logic
   if (sortValue === "title_asc") {
@@ -318,12 +289,15 @@ function renderDashboard(data) {
   const recentId = localStorage.getItem("lastRead");
   const recentItem = data.find(item => item.id === recentId);
   const recentList = document.querySelector("#recently-read ul");
+  const recentStats = document.getElementById("recentStats");
   recentList.innerHTML = "";
+  
   if (recentItem) {
     const li = document.createElement("li");
     li.textContent = recentItem.title;
     recentList.appendChild(li);
   }
+  recentStats.textContent = `Total Recently Read: ${recentList.children.length}`;
 
   const rated = data
     .map(item => {
@@ -335,23 +309,28 @@ function renderDashboard(data) {
     .slice(0, 5);
 
   const topRatedList = document.querySelector("#top-rated ul");
+  const topRatedStats = document.getElementById("topRatedStats");
   topRatedList.innerHTML = "";
   rated.forEach(item => {
     const li = document.createElement("li");
     li.textContent = `${item.title} (${item.rating}/10)`;
     topRatedList.appendChild(li);
   });
+  topRatedStats.textContent = `Top Rated: ${rated.length}`;
 
   const bookmarks = getBookmarks();
   const bookmarkedItems = data.filter(item => bookmarks.includes(item.id)).slice(0, 5);
   const bookmarkedList = document.querySelector("#most-bookmarked ul");
+  const bookmarkedStats = document.getElementById("bookmarkedStats");
   bookmarkedList.innerHTML = "";
   bookmarkedItems.forEach(item => {
     const li = document.createElement("li");
     li.textContent = item.title;
     bookmarkedList.appendChild(li);
   });
+  bookmarkedStats.textContent = `Most Bookmarked: ${bookmarkedItems.length}`;
 }
+
 
 // === Firebase Fetch + Render ===
 async function fetchManhwaFromFirebase() {
