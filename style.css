@@ -255,7 +255,7 @@ body[class^="section-"] {
   body.section-home {
     min-height: 100vh;
     background-image: url('./backgrounds/background-mobile2x.jpg');
-    background-size: cover;
+    background-size: contain;
     background-position: center top;
     background-repeat: no-repeat;
     background-attachment: scroll;
