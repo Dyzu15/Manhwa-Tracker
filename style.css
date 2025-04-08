@@ -219,16 +219,16 @@ button:hover {
 
 /* ========== Background Overlay Animation ========== */
 .background-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-image: url('background.jpg');
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  background-image: url('background.jpg'); /* or per-section background */
   background-size: cover;
-  background-position: center;
+  background-position: top center;
   background-repeat: no-repeat;
-  opacity: 0.15;
   z-index: -1;
-  animation: zoomInOut 12s cubic-bezier(0.25, 0.8, 0.25, 1) infinite alternate;
 }
 
 /* ========== Section-Specific Backgrounds ========== */
