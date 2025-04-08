@@ -257,10 +257,9 @@ body[class^="section-"] {
     background-position: center top;
     background-size: contain;
     background-repeat: no-repeat;
+    min-height: 100vh;
   }
 }
-
-
 
 /* ========== Modal / Popup ========== */
 .popup-overlay {
