@@ -60,6 +60,41 @@ function openPopup(item) {
   loadComments(item.id); // load comments based on the clicked manhwa
 }
 
+function closePopup() {
+  document.getElementById("popupOverlay").classList.add("hidden");
+}
+
+function loadComments(seriesId) {
+  const commentsList = document.getElementById("commentsList");
+  commentsList.innerHTML = "Loading comments...";
+
+  db.collection("comments")
+    .where("seriesId", "==", seriesId)
+    .orderBy("timestamp", "desc")
+    .get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        commentsList.innerHTML = "<p>No comments yet.</p>";
+        return;
+      }
+
+      commentsList.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement("div");
+        div.className = "comment";
+        div.innerHTML = `
+          <strong>${data.user}</strong><br />
+          ${data.message}
+        `;
+        commentsList.appendChild(div);
+      });
+    })
+    .catch(err => {
+      commentsList.innerHTML = "❌ Error loading comments.";
+      console.error("Error loading comments:", err);
+    });
+}
 
 function closePopup() {
   document.getElementById("popupOverlay").classList.add("hidden");
