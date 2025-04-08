@@ -47,7 +47,7 @@ function openPopup(item) {
   const savedRating = localStorage.getItem(`rating_${item.id}`) || "";
 
   const ratingInput = document.getElementById("ratingInput");
-  const chapterInput = document.getElementById("popupChapterInput");
+  const chapterInput = document.getElementById("chapterInput");
 
   if (ratingInput) ratingInput.value = savedRating;
   if (chapterInput) chapterInput.value = savedChapter;
@@ -65,7 +65,7 @@ function closePopup() {
 }
 
 function saveChapterProgress() {
-  const newChapter = document.getElementById("popupChapterInput").value;
+  const newChapter = document.getElementById("chapterInput").value;
   const newRating = document.getElementById("ratingInput").value;
 
   if (currentPopupId && newChapter && Number(newChapter) > 0) {
@@ -122,18 +122,45 @@ function getStatus(id) {
 }
 
 // === Render Cards ===
+
 function renderList(data, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = "";
 
-  data.forEach(item => {
-    const selectedGenre = document.getElementById("genreFilter")?.value.toLowerCase() || "all";
-    const keyword = document.getElementById("searchInput")?.value.toLowerCase() || "";
+  const genreValue = document.getElementById("genreFilter")?.value.toLowerCase() || "all";
+  const statusValue = document.getElementById("statusFilter")?.value || "all";
+  const sortValue = document.getElementById("sortBy")?.value || "default";
+  const keyword = document.getElementById("searchInput")?.value.toLowerCase() || "";
 
-    if ((selectedGenre !== "all" && item.genre.toLowerCase() !== selectedGenre) ||
-        (keyword && !item.title.toLowerCase().includes(keyword))) return;
+  let filtered = data.filter(item => {
+    const matchesGenre = genreValue === "all" || item.genre.toLowerCase() === genreValue;
+    const matchesSearch = !keyword || item.title.toLowerCase().includes(keyword);
+    const savedStatus = getStatus(item.id);
+    const matchesStatus = statusValue === "all" || savedStatus === statusValue;
+    return matchesGenre && matchesSearch && matchesStatus;
+  });
 
+  // Sort logic
+  if (sortValue === "title_asc") {
+    filtered.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortValue === "title_desc") {
+    filtered.sort((a, b) => b.title.localeCompare(a.title));
+  } else if (sortValue === "rating_high") {
+    filtered.sort((a, b) => {
+      const rA = parseInt(localStorage.getItem(`rating_${a.id}`)) || 0;
+      const rB = parseInt(localStorage.getItem(`rating_${b.id}`)) || 0;
+      return rB - rA;
+    });
+  } else if (sortValue === "rating_low") {
+    filtered.sort((a, b) => {
+      const rA = parseInt(localStorage.getItem(`rating_${a.id}`)) || 0;
+      const rB = parseInt(localStorage.getItem(`rating_${b.id}`)) || 0;
+      return rA - rB;
+    });
+  }
+
+  filtered.forEach(item => {
     const isRead = localStorage.getItem(item.id) === "read";
     const bookmarked = isBookmarked(item.id);
     const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
@@ -141,38 +168,34 @@ function renderList(data, containerId) {
 
     const card = document.createElement("div");
     card.className = "card";
-   card.innerHTML = `
-  <img src="${item.cover}" alt="${item.title}" class="cover-image" style="cursor: pointer;" />
-  <h3>${item.title}</h3>
-  <p>Chapter ${savedChapter}</p>
-  <p>⭐ Rating: ${savedRating}</p>
-  <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
-  <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
-  <select onchange="updateStatus('${item.id}', this.value)">
-    <option value="">📂 Set Status</option>
-    <option value="reading">📖 Reading</option>
-    <option value="completed">🏁 Completed</option>
-    <option value="on_hold">⌛ On Hold</option>
-    <option value="dropped">❌ Dropped</option>
-    <option value="wishlist">💭 Wishlist</option>
-  </select>
-`;
+    card.innerHTML = `
+      <img src="${item.cover}" alt="${item.title}" class="cover-image" style="cursor: pointer;" />
+      <h3>${item.title}</h3>
+      <p>Chapter ${savedChapter}</p>
+      <p>⭐ Rating: ${savedRating}</p>
+      <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
+      <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
+      <select onchange="updateStatus('${item.id}', this.value)">
+        <option value="">📂 Set Status</option>
+        <option value="reading">📖 Reading</option>
+        <option value="completed">🏁 Completed</option>
+        <option value="on_hold">⌛ On Hold</option>
+        <option value="dropped">❌ Dropped</option>
+        <option value="wishlist">💭 Wishlist</option>
+      </select>
+    `;
 
-
-   // Open popup when clicking anywhere on the card (except interactive elements)
-card.addEventListener("click", (e) => {
-  const isInteractive =
-    e.target.closest("button") ||
-    e.target.closest("select") ||
-    e.target.tagName === "OPTION";
-  if (!isInteractive) {
-    openPopup(item);
-  }
-});
+    card.addEventListener("click", (e) => {
+      const isInteractive = e.target.closest("button") || e.target.closest("select") || e.target.tagName === "OPTION";
+      if (!isInteractive) {
+        openPopup(item);
+      }
+    });
 
     container.appendChild(card);
   });
 }
+
 
 // === Dashboard Rendering ===
 function renderDashboard(data) {
@@ -404,6 +427,16 @@ if (addManhwaForm) {
 document.getElementById("searchInput").addEventListener("input", () => {
   renderAll();
 });
+document.getElementById("genreFilter").addEventListener("change", () => {
+  renderAll();
+});
+document.getElementById("statusFilter").addEventListener("change", () => {
+  renderAll();
+});
+document.getElementById("sortBy").addEventListener("change", () => {
+  renderAll();
+});
+
 
   const profileBtn = document.getElementById("profileBtn");
   if (profileBtn) {
