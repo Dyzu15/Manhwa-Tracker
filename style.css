@@ -1014,4 +1014,9 @@ document.getElementById("postCommentBtn").addEventListener("click", () => {
   });
 });
 
+/* For Buy Me A Coffee Button */
+.buy-coffee-button img {
+  width: 150px; /* Adjust the width to make the button smaller */
+  height: auto; /* Ensure the height maintains its aspect ratio */
+}
 
