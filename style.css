@@ -253,6 +253,7 @@ body[class^="section-"] {
 
 @media (max-width: 768px) {
   body[class^="section-"] {
+    background-image: url('./backgrounds/background-mobile@2x.jpg');
     background-attachment: scroll;
     background-position: center top;
     background-size: cover;
