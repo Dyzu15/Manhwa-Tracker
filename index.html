@@ -178,44 +178,45 @@
 <div id="popupOverlay" class="popup-overlay hidden">
   <div class="popup">
     <span class="close-btn" onclick="closePopup()">×</span>
-    <img id="popupCover" src="" alt="Cover" />
-    <h3 id="popupTitle">Title</h3>
-    <p id="popupChapter">Chapter</p>
 
-<label for="popupChapterInput">Update Chapter:</label>
-<input type="number" id="popupChapterInput" placeholder="Enter chapter" />
+    <div class="popup-left">
+      <img id="popupCover" src="" alt="Cover" />
+      <h3 id="popupTitle">Title</h3>
+      <p id="popupChapter">Chapter</p>
 
+      <label for="popupChapterInput">Update Chapter:</label>
+      <input type="number" id="popupChapterInput" placeholder="Enter chapter" />
 
-    <label for="ratingInput">Your Rating (1–10):</label>
-    <select id="ratingInput">
-      <option value="">⭐ Rate</option>
-      <option value="1">1/10</option>
-      <option value="2">2/10</option>
-      <option value="3">3/10</option>
-      <option value="4">4/10</option>
-      <option value="5">5/10</option>
-      <option value="6">6/10</option>
-      <option value="7">7/10</option>
-      <option value="8">8/10</option>
-      <option value="9">9/10</option>
-      <option value="10">10/10</option>
-    </select>
+      <label for="ratingInput">Your Rating (1–10):</label>
+      <select id="ratingInput">
+        <option value="">⭐ Rate</option>
+        <option value="1">1/10</option>
+        <option value="2">2/10</option>
+        <option value="3">3/10</option>
+        <option value="4">4/10</option>
+        <option value="5">5/10</option>
+        <option value="6">6/10</option>
+        <option value="7">7/10</option>
+        <option value="8">8/10</option>
+        <option value="9">9/10</option>
+        <option value="10">10/10</option>
+      </select>
 
-    
-    <button onclick="saveChapterProgress()">Save Progress</button>
-    <p id="popupDescription">This is a placeholder synopsis.</p>
-  </div>
-  <div id="commentSection">
-  <h3>💬 Comments</h3>
-  <div id="commentsList">Loading comments...</div>
+      <button onclick="saveChapterProgress()">Save Progress</button>
+      <p id="popupDescription">This is a placeholder synopsis.</p>
+    </div>
 
-  <div id="commentForm">
-    <textarea id="commentInput" placeholder="Write a comment..." rows="3"></textarea>
-    <button id="postCommentBtn">Post Comment</button>
+    <div class="popup-right">
+      <h3>💬 Comments</h3>
+      <div id="commentsList">Loading comments...</div>
+
+      <div id="commentForm">
+        <textarea id="commentInput" placeholder="Write a comment..." rows="3"></textarea>
+        <button id="postCommentBtn">Post Comment</button>
+      </div>
+    </div>
   </div>
 </div>
-</div>
-
 
   <!-- Firebase Login Modal -->
   <div id="loginModal" class="popup-overlay hidden">
