@@ -112,8 +112,8 @@ button:hover {
 /* ========== Card Container ========== */
 .card-list {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 16px;
   padding: 20px;
 }
 
@@ -1019,12 +1019,6 @@ document.getElementById("postCommentBtn").addEventListener("click", () => {
 }
 
 /* Adjust the width for smaller screens */
-@media (max-width: 768px) {
-  .buy-coffee-button img {
-    width: 110px; /* Smaller button on smaller screens */
-  }
-}
-
 @media (max-width: 1024px) {
   .card-list {
     grid-template-columns: repeat(4, 1fr);
@@ -1033,15 +1027,16 @@ document.getElementById("postCommentBtn").addEventListener("click", () => {
 
 @media (max-width: 768px) {
   .card-list {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
 @media (max-width: 480px) {
   .card-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(4, 1fr);
   }
 }
+
 
 
 
