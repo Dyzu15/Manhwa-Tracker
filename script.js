@@ -90,6 +90,19 @@ function loadComments(seriesId) {
       commentsList.innerHTML = "❌ Error loading comments.";
       console.error("Error loading comments:", err);
     });
+  
+    // Render tags (optional: only if item.tags exists and is an array)
+  const tagList = document.getElementById("popupTags");
+  if (tagList && Array.isArray(item.tags)) {
+    tagList.innerHTML = "";
+    item.tags.forEach(tag => {
+      const span = document.createElement("span");
+      span.className = "tag";
+      span.textContent = tag;
+      tagList.appendChild(span);
+    });
+  }
+
 }
 
 function closePopup() {
