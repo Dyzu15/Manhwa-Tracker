@@ -418,7 +418,6 @@ function openEditProfile() {
     }
   });
 
-  document.getElementById("editProfileModal").classList.remove("hidden");
 }
 
 function closeEditProfile() {
