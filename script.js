@@ -476,6 +476,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (profileModal && !profileModal.classList.contains("hidden")) {
     profileModal.classList.add("hidden");
   }
+  document.getElementById("editProfileModal").classList.add("hidden");
 
   showLoggedInUser();
   renderAll();
