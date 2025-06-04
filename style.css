@@ -1,4 +1,5 @@
-/* ========== General Layout ========== */
+/* ===== Cleaned, Responsive CSS for Manhwa Tracker ===== */
+
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
@@ -13,7 +14,6 @@ html, body {
   min-height: 100%;
 }
 
-
 h2 {
   font-weight: 600;
   font-size: 24px;
@@ -21,20 +21,7 @@ h2 {
   text-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-/* ========== SPA Sections ========== */
-main > section {
-  display: none;
-  padding: 24px;
-  margin-bottom: 40px;
-  background: rgba(255,255,255,0.02);
-  border-radius: 12px;
-}
-main > section.active-section {
-  display: block;
-  animation: fadeIn 0.4s ease-in-out;
-}
-
-/* ========== Buttons ========== */
+/* ===== Buttons ===== */
 button, .login-btn {
   background: linear-gradient(135deg, #f0a500, #ffcc4d);
   border: none;
@@ -51,219 +38,77 @@ button:hover {
   box-shadow: 0 4px 12px rgba(255, 204, 77, 0.3);
 }
 
-/* ========== Card Styling ========== */
+/* ===== Buy Me A Coffee Button ===== */
+.buy-coffee-button {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+.buy-coffee-button img {
+  width: 130px;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* ===== Card Styling ===== */
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
 .card {
   background-color: rgba(31, 31, 31, 0.9);
   border-radius: 10px;
-  width: 160px;
   padding: 12px;
-  flex: 0 0 auto;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  position: relative;
-  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(240, 165, 0, 0.5);
 }
-.card h3 {
-  margin: 8px 0 4px;
-  font-size: 16px;
-}
-.card p {
-  font-size: 13px;
-  color: #ccc;
-}
-.card button {
-  width: 100%;
-  margin-top: 10px;
-}
-
-/* ========== Image Loading with Shimmer ========== */
 .card img {
   width: 100%;
   border-radius: 6px;
-  opacity: 1;
   background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   transition: opacity 0.5s ease;
 }
 .card img.loaded {
-  opacity: 1;
-  background: none;
   animation: none;
+  background: none;
 }
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-/* ========== Card Shimmer Overlay ========== */
-.card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 200%;
-  height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.1), transparent);
-  animation: shimmer 2s infinite;
-  pointer-events: none;
+.card h3 {
+  font-size: 16px;
+  margin: 10px 0 4px;
+  text-align: center;
+}
+.card p {
+  font-size: 13px;
+  color: #ccc;
+  text-align: center;
 }
 
-/* ========== Card Container ========== */
-.card-list {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 16px;
-  padding: 20px;
+.card button {
+  width: 100%;
+  margin-top: 10px;
 }
 
-
-/* ========== Navbar ========== */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #1c1c1c;
-  padding: 10px 20px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.logo-small {
-  height: 40px;
-}
-.site-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #f0a500;
-}
-.navbar-center {
-  display: flex;
-}
-.navbar-links {
-  display: flex;
-  gap: 20px;
-}
-.navbar-links a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-.navbar-links a:hover,
-.navbar-links a.active-link {
-  color: #f0a500;
-  text-decoration: underline;
-  font-weight: bold;
-}
-.navbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-#searchInput {
-  padding: 6px 10px;
-  border-radius: 4px;
-  background-color: #2c2c2c;
-  border: none;
-  color: #fff;
-  font-size: 14px;
-}
-
-/* ========== Hamburger Menu ========== */
-.hamburger-btn {
-  display: none;
-  background: none;
-  color: #f0a500;
-  font-size: 24px;
-  border: none;
-  cursor: pointer;
-}
-@media (max-width: 768px) {
-  .hamburger-btn {
-    display: block;
-  }
-  #dashboard .dashboard-cards {
-  flex-direction: column;
-  align-items: center;
-}
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .navbar-links {
-    flex-direction: column;
-    max-height: 0;
-    overflow: hidden;
-    gap: 10px;
-    padding-top: 0;
-    transition: max-height 0.4s ease, padding-top 0.3s ease;
-  }
-  .navbar-links.open {
-    max-height: 300px;
-    padding-top: 10px;
-  }
-}
-
-
-/* ========== Section-Specific Backgrounds ========== */
-body.section-home {
-  background-image: url('./backgrounds/bg-home.jpg');
-}
-
-body.section-my-library {
-  background-image: url('./backgrounds/bg-my-library.jpg');
-}
-
-body.section-popular {
-  background-image: url('./backgrounds/bg-popular.jpg');
-}
-
-body.section-new {
-  background-image: url('./backgrounds/bg-new.jpg');
-}
-
-body.section-dashboard {
-  background-image: url('./backgrounds/bg-dashboard.jpg');
-}
-
-body[class^="section-"] {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-
-@keyframes zoomInOut {
-  0% { transform: scale(1); opacity: 0.9; }
-  100% { transform: scale(1.05); opacity: 1; }
-}
-
-@media (max-width: 768px) {
-  body.section-home {
-    background-image: url('./backgrounds/background-mobile2x.jpg');
-    background-size: contain;
-    background-position: auto;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-  }
-}
-
-
-
-/* ========== Modal / Popup ========== */
+/* ===== Popup Modal ===== */
 .popup-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -279,24 +124,27 @@ body[class^="section-"] {
 
 .popup {
   background: rgba(31, 31, 31, 0.95);
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1.5rem;
-  width: 100%;
-  max-width: 900px;
   border-radius: 14px;
-  color: #fff;
+  max-width: 900px;
+  width: 100%;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Increased gap for more spacing */
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+  color: white;
+  gap: 1.5rem;
   animation: popupExpand 0.3s ease-in-out;
-  position: relative;
-  box-sizing: border-box;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+}
+
+@keyframes popupExpand {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .popup-left,
 .popup-right {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -304,52 +152,31 @@ body[class^="section-"] {
 
 .popup img {
   max-width: 140px;
-  max-height: 200px;
   object-fit: cover;
   border-radius: 8px;
   margin: 0 auto;
 }
 
-.popup h3 {
-  text-align: center;
-  font-size: 1.2rem;
-}
-
-.popup p,
-.popup label {
-  font-size: 0.95rem;
-}
-
-.popup input[type="number"],
-.popup input[type="text"],
+.popup input,
 .popup select,
 .popup textarea {
   background-color: #2c2c2c;
   color: #fff;
   border: 1px solid #444;
   border-radius: 6px;
-  padding: 12px; /* Increased padding for better touch targets */
+  padding: 12px;
   width: 100%;
-  box-sizing: border-box;
   font-size: 0.95rem;
-  margin-bottom: 1rem; /* Added margin to separate inputs */
-}
-
-.popup textarea {
-  resize: none;
 }
 
 .popup button {
   background-color: #facc15;
   color: #000;
-  border: none;
   padding: 12px;
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
   width: 100%;
-  transition: background 0.3s ease;
-  font-size: 0.95rem;
 }
 
 .popup button:hover {
@@ -363,7 +190,6 @@ body[class^="section-"] {
   max-height: 180px;
   overflow-y: auto;
   font-size: 0.9rem;
-  margin-bottom: 1rem; /* Add margin to better separate comments */
 }
 
 .close-btn {
@@ -375,20 +201,32 @@ body[class^="section-"] {
   cursor: pointer;
 }
 
-.hidden {
-  display: none;
+@media (min-width: 768px) {
+  .popup {
+    flex-direction: row;
+  }
+  .popup-left,
+  .popup-right {
+    min-width: 280px;
+  }
 }
 
-@keyframes popupExpand {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
+@media (max-width: 768px) {
+  .popup {
+    padding: 1rem;
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  .popup img {
+    max-width: 120px;
+  }
+  .popup input,
+  .popup select,
+  .popup textarea,
+  .popup button {
+    font-size: 0.9rem;
+    padding: 10px;
   }
 }
+
 
 /* Tablet/Desktop layout split */
 @media (min-width: 768px) {
@@ -994,27 +832,6 @@ body.light .dashboard-box ul {
   font-size: 0.85rem;
 }
 
-document.getElementById("postCommentBtn").addEventListener("click", () => {
-  const message = document.getElementById("commentInput").value.trim();
-  if (!message || !currentPopupId) return;
-
-  const username = localStorage.getItem("username") || "Guest";
-
-  db.collection("comments").add({
-    seriesId: currentPopupId,
-    user: username,
-    message: message,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  })
-  .then(() => {
-    document.getElementById("commentInput").value = "";
-    loadComments(currentPopupId);
-  })
-  .catch(error => {
-    console.error("❌ Failed to post comment:", error);
-  });
-});
-
 /* Buy Me A Coffee Button CSS */
 .buy-coffee-button img {
   width: 130px; /* Adjust for desktop size */
@@ -1041,10 +858,3 @@ document.getElementById("postCommentBtn").addEventListener("click", () => {
     grid-template-columns: repeat(4, 1fr);
   }
 }
-
-
-
-
-
-
-
