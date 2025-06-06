@@ -418,6 +418,7 @@ function openEditProfile() {
     }
   });
 
+  document.getElementById("editProfileModal").classList.remove("hidden");
 }
 
 function closeEditProfile() {
@@ -476,7 +477,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (profileModal && !profileModal.classList.contains("hidden")) {
     profileModal.classList.add("hidden");
   }
-  document.getElementById("editProfileModal").classList.add("hidden");
 
   showLoggedInUser();
   renderAll();
