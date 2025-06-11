@@ -3,14 +3,20 @@
 const hamburgerBtn = document.getElementById("hamburgerBtn");
 const navMenu = document.getElementById("navMenu");
 const navLinks = document.querySelectorAll(".navbar-links a");
-const sections = document.querySelectorAll("main > section");
+
 
 hamburgerBtn?.addEventListener("click", () => {
   navMenu.classList.toggle("open");
 });
 
 function showSection(sectionId) {
-  sections.forEach(section => section.classList.remove("active-section"));
+  const sections = document.querySelectorAll("main > section:not(#feature-banner)");
+  sections.forEach(section => {
+  if (section.id !== "feature-banner") {
+    section.classList.remove("active-section");
+  }
+});
+
   const target = document.getElementById(sectionId);
   if (target) target.classList.add("active-section");
 
@@ -217,11 +223,14 @@ function renderList(data, containerId) {
 
   const genreValue = document.getElementById("genreFilter")?.value.toLowerCase() || "all";
   const statusValue = document.getElementById("statusFilter")?.value || "all";
+  console.log("🟨 Selected Genre:", genreValue);
+  console.log("🟨 Selected Status:", statusValue);
+  console.log("🟨 Data sample:", data[0]);
   const sortValue = document.getElementById("sortBy")?.value || "default";
   const keyword = document.getElementById("searchInput")?.value.toLowerCase() || "";
 
   let filtered = data.filter(item => {
-    const matchesGenre = genreValue === "all" || item.genre.toLowerCase() === genreValue;
+    const matchesGenre = genreValue === "all" || (item.genre?.toLowerCase?.() || "") === genreValue;
     const matchesSearch = !keyword || item.title.toLowerCase().includes(keyword);
     const savedStatus = getStatus(item.id);
     const matchesStatus = statusValue === "all" || savedStatus === statusValue;
@@ -256,10 +265,12 @@ function renderList(data, containerId) {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
-      <img src="${item.cover}" alt="${item.title}" class="cover-image" style="cursor: pointer;" />
-      <h3>${item.title}</h3>
-      <p>Chapter ${savedChapter}</p>
-      <p>⭐ Rating: ${savedRating}</p>
+  <img src="${item.cover}" alt="${item.title}" class="cover-image" />
+  <div class="card-content">
+    <h3>${item.title}</h3>
+    <p>Chapter ${savedChapter}</p>
+    <p>⭐ Rating: ${savedRating}</p>
+    <div class="actions">
       <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
       <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
       <select onchange="updateStatus('${item.id}', this.value)">
@@ -270,7 +281,10 @@ function renderList(data, containerId) {
         <option value="dropped">❌ Dropped</option>
         <option value="wishlist">💭 Wishlist</option>
       </select>
-    `;
+    </div>
+  </div>
+`;
+
 
     card.addEventListener("click", (e) => {
       const isInteractive = e.target.closest("button") || e.target.closest("select") || e.target.tagName === "OPTION";
@@ -338,21 +352,50 @@ async function fetchManhwaFromFirebase() {
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
-async function renderAll() {
+ async function renderAll() {
   const bookmarked = getBookmarks();
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
   const manhwaList = await fetchManhwaFromFirebase();
 
-  renderList(manhwaList, "currently-reading");
-  renderList(manhwaList, "popular-list");
-  renderList(manhwaList.filter(m => bookmarked.includes(m.id)), "my-library");
-  renderList(manhwaList.filter(m => statusMap[m.id] === "completed"), "status-completed");
-  renderList(manhwaList.filter(m => statusMap[m.id] === "on_hold"), "status-onhold");
-  renderList(manhwaList.filter(m => statusMap[m.id] === "dropped"), "status-dropped");
-  renderList(manhwaList.filter(m => statusMap[m.id] === "wishlist"), "status-wishlist");
+  const genreValue = document.getElementById("genreFilter")?.value.toLowerCase() || "all";
+  const statusValue = document.getElementById("statusFilter")?.value || "all";
+  const sortValue = document.getElementById("sortBy")?.value || "default";
+  const keyword = document.getElementById("searchInput")?.value.toLowerCase() || "";
 
+  let filtered = manhwaList.filter(item => {
+    const matchesGenre = genreValue === "all" || (item.genre?.toLowerCase?.() || "") === genreValue;
+    const matchesSearch = !keyword || item.title.toLowerCase().includes(keyword);
+    const savedStatus = getStatus(item.id);
+    const matchesStatus = statusValue === "all" || savedStatus === statusValue;
+    return matchesGenre && matchesSearch && matchesStatus;
+  });
+
+  // Apply sorting
+  if (sortValue === "title_asc") {
+    filtered.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortValue === "title_desc") {
+    filtered.sort((a, b) => b.title.localeCompare(a.title));
+  } else if (sortValue === "rating_high") {
+    filtered.sort((a, b) => {
+      const rA = parseInt(localStorage.getItem(`rating_${a.id}`)) || 0;
+      const rB = parseInt(localStorage.getItem(`rating_${b.id}`)) || 0;
+      return rB - rA;
+    });
+  } else if (sortValue === "rating_low") {
+    filtered.sort((a, b) => {
+      const rA = parseInt(localStorage.getItem(`rating_${a.id}`)) || 0;
+      const rB = parseInt(localStorage.getItem(`rating_${b.id}`)) || 0;
+      return rA - rB;
+    });
+  }
+
+  // Render to Home section only
+  renderList(filtered, "currently-reading");
+
+  // Still render dashboard with full list
   renderDashboard(manhwaList);
 }
+
 // === Admin Email Config ===
 const adminEmail = "tacpack10@gmail.com";
 
@@ -568,6 +611,14 @@ document.getElementById("sortBy").addEventListener("change", () => {
       if (img.complete) img.classList.add('loaded');
     });
   }, 100);
+
+  // 🛡️ Prevent filter select from triggering anchor navigation
+document.querySelectorAll('.filter-bar select').forEach(select => {
+  select.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent bubble to nav or hash links
+  });
+});
+
     // === Post Comment Handler ===
   document.getElementById("postCommentBtn").addEventListener("click", async () => {
     const message = document.getElementById("commentInput").value.trim();
@@ -620,6 +671,79 @@ document.querySelectorAll('.card-list').forEach(container => {
     const walk = (x - startX) * 2; // speed
     container.scrollLeft = scrollLeft - walk;
   });
+// === Admin Import from API ===
+const searchBtn = document.getElementById("searchManhwaBtn");
+const searchInput = document.getElementById("searchManhwaInput");
+const searchResults = document.getElementById("searchResults");
+
+if (searchBtn && searchInput && searchResults) {
+  searchBtn.addEventListener("click", async () => {
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    searchResults.innerHTML = "<p>🔍 Searching...</p>";
+
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/manga?q=${encodeURIComponent(query)}&limit=10`);
+      
+      // Handle rate limiting (429)
+      if (res.status === 429) {
+        searchResults.innerHTML = `
+          <p>🚫 Too many requests to the Jikan API (429).</p>
+          <p>Try again in a few seconds.</p>
+        `;
+        return;
+      }
+
+      const data = await res.json();
+
+      // Check for valid response
+      if (!data.data || !Array.isArray(data.data)) {
+        searchResults.innerHTML = "<p>❌ No results found or malformed response.</p>";
+        return;
+      }
+
+      searchResults.innerHTML = "";
+
+      data.data.forEach(manga => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${manga.images?.jpg?.image_url || './fallback.jpg'}" alt="${manga.title}" class="cover-image" />
+          <div class="card-content">
+            <h3>${manga.title}</h3>
+            <p>${(manga.synopsis && typeof manga.synopsis === 'string') ? manga.synopsis.slice(0, 150) : "No description."}</p>
+            <button>Add to DB</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", async () => {
+          try {
+            await db.collection("manhwa").add({
+              title: manga.title,
+              genre: (manga.genres?.map(g => g.name).join(", ") || "unknown").toLowerCase(),
+              cover: manga.images?.jpg?.image_url || '',
+              description: manga.synopsis || "",
+              chapter: 0,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            card.querySelector("button").textContent = "✅ Added!";
+          } catch (e) {
+            console.error("❌ Failed to add:", e);
+            card.querySelector("button").textContent = "❌ Error";
+          }
+        });
+
+        searchResults.appendChild(card);
+      });
+
+    } catch (err) {
+      console.error("❌ Fetch error:", err);
+      searchResults.innerHTML = "<p>❌ Error fetching results. Please check your connection or try again later.</p>";
+    }
+  });
+}
+
 });
 
 // === PWA Service Worker Registration ===
@@ -630,3 +754,27 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.error('❌ Service Worker registration failed:', err));
   });
 }
+
+// Featured Slider Logic
+const slides = document.querySelectorAll('.featured-slide');
+const dots = document.querySelectorAll('.featured-dots .dot');
+let currentSlide = 0;
+
+function showSlide(index) {
+  slides.forEach((slide, i) => {
+    slide.classList.toggle('active', i === index);
+    dots[i].classList.toggle('active', i === index);
+  });
+  currentSlide = index;
+}
+
+// Automatically rotate every 5 seconds
+setInterval(() => {
+  const next = (currentSlide + 1) % slides.length;
+  showSlide(next);
+}, 5000);
+
+// Dot click event
+dots.forEach((dot, i) => {
+  dot.addEventListener('click', () => showSlide(i));
+});
