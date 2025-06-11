@@ -686,6 +686,12 @@ if (now - lastSearchTime < 5000) {
 }
 lastSearchTime = now;
 
+// Disable the button temporarily
+searchBtn.disabled = true;
+setTimeout(() => {
+  searchBtn.disabled = false;
+}, 5000);
+
 const query = searchInput.value.trim();
 if (!query) return;
 
