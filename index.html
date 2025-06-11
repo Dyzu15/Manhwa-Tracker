@@ -12,7 +12,7 @@
 
 
   <!-- Apple iOS Support -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="apple-touch-icon" sizes="192x192" href="/Manhwa-Tracker/icons/icon-192.png" />
   <link rel="apple-touch-icon" sizes="512x512" href="/Manhwa-Tracker/icons/icon-512.png" />
@@ -36,7 +36,7 @@
   <link rel="icon" type="image/png" href="./icons/icon-192.png" />
   <link rel="shortcut icon" href="icons/icon-192x192.png" />
   <link rel="manifest" href="./manifest.json" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
 
   <style>
@@ -48,7 +48,19 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
+
 <body>
+
+  <!-- 🔝 Full-width video above navbar -->
+<section class="video-banner-top">
+  <video autoplay muted loop playsinline>
+    <source src="backgrounds/banner.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+
+   <!-- 🔥 Glowing Logo/Text -->
+  <div class="video-overlay">Manhwa Tracker</div>
+</section>
   
   <!-- Header -->
   <header class="navbar">
@@ -86,8 +98,8 @@
   </header>
 
   <!-- Genre Filter -->
-<div class="filter-section">
-  <label for="genreFilter">Filter by Genre:</label>
+<!-- Horizontal Filter Bar -->
+<div class="filter-bar">
   <select id="genreFilter">
     <option value="all">All Genres</option>
     <option value="action">Action</option>
@@ -96,7 +108,6 @@
     <option value="comedy">Comedy</option>
   </select>
 
-  <label for="statusFilter">Status:</label>
   <select id="statusFilter">
     <option value="all">All</option>
     <option value="reading">Reading</option>
@@ -106,7 +117,6 @@
     <option value="wishlist">Wishlist</option>
   </select>
 
-  <label for="sortBy">Sort By:</label>
   <select id="sortBy">
     <option value="default">Default</option>
     <option value="title_asc">Title A–Z</option>
@@ -116,12 +126,121 @@
   </select>
 </div>
 
+
+
   <!-- Main Content -->
-  <main>
-    <section id="home" class="active-section">
-      <h2>Currently Reading</h2>
-      <div class="card-list" id="currently-reading"></div>
+<main>
+  <section id="home" class="active-section">
+
+    <section class="featured-slider">
+      <div class="featured-container"></div>
+
+      <!-- Solo Leveling -->
+      <div class="featured-slide active">
+        <div class="featured-info">
+          <div class="featured-rating">⭐ <span>9.8</span></div>
+          <h2>SOLO LEVELING</h2>
+          <p class="featured-genre">MANHWA</p>
+          <p class="featured-tags">Action, Fantasy, Dungeon</p>
+          <p class="featured-summary">
+            <strong>SUMMARY</strong><br>
+            Jinwoo Sung was the world’s weakest hunter. When a hidden dungeon nearly kills him, he unlocks a secret ability that allows him to level up—alone. Can he become humanity’s strongest hunter?
+          </p>
+          <p class="featured-status">Status: Completed</p>
+        </div>
+        <div class="featured-cover">
+          <img src="covers/solo-leveling.jpg" alt="Solo Leveling">
+        </div>
+      </div>
+
+      <!-- Omniscient Reader -->
+      <div class="featured-slide">
+        <div class="featured-info">
+          <div class="featured-rating">⭐ <span>9.8</span></div>
+          <h2>OMNISCIENT READER</h2>
+          <p class="featured-genre">MANHWA</p>
+          <p class="featured-tags">Apocalypse, Drama, Fantasy</p>
+          <p class="featured-summary">
+            <strong>SUMMARY</strong><br>
+            Dokja Kim is the only reader of an obscure web novel—until one day, the novel becomes reality. As the world collapses, he uses his knowledge to rewrite fate and survive the apocalypse.
+          </p>
+          <p class="featured-status">Status: Ongoing</p>
+        </div>
+        <div class="featured-cover">
+          <img src="covers/omniscient-reader.jpg" alt="Omniscient Reader">
+        </div>
+      </div>
+
+      <!-- Legend of the Northern Blade -->
+      <div class="featured-slide">
+        <div class="featured-info">
+          <div class="featured-rating">⭐ <span>9.7</span></div>
+          <h2>THE LEGEND OF THE NORTHERN BLADE</h2>
+          <p class="featured-genre">MANHWA</p>
+          <p class="featured-tags">Revenge, Martial Arts, Action</p>
+          <p class="featured-summary">
+            <strong>SUMMARY</strong><br>
+            Moowon’s father dies after being accused of collusion, and the sect collapses. Now alone, Moowon trains to destroy the Silent Night who took everything from him. His path of revenge begins.
+          </p>
+          <p class="featured-status">Status: Completed</p>
+        </div>
+        <div class="featured-cover">
+          <img src="covers/northern-blade.jpg" alt="Legend of the Northern Blade">
+        </div>
+      </div>
+
+      <!-- Pick Me Up -->
+      <div class="featured-slide">
+        <div class="featured-info">
+          <div class="featured-rating">⭐ <span>9.6</span></div>
+          <h2>PICK ME UP</h2>
+          <p class="featured-genre">MANHWA</p>
+          <p class="featured-tags">Fantasy, Action, Adventure</p>
+          <p class="featured-summary">
+            <strong>SUMMARY</strong><br>
+            Seojin gets pulled into a game where he becomes a low-level hero. To survive, he must break the system, level up fast, and rise from being a pawn to the strongest player in this gacha nightmare.
+          </p>
+          <p class="featured-status">Status: Ongoing</p>
+        </div>
+        <div class="featured-cover">
+          <img src="covers/pick-me-up.jpg" alt="Pick Me Up">
+        </div>
+      </div>
+
+      <!-- Surviving the Game as a Barbarian -->
+      <div class="featured-slide">
+        <div class="featured-info">
+          <div class="featured-rating">⭐ <span>9.6</span></div>
+          <h2>SURVIVING THE GAME AS A BARBARIAN</h2>
+          <p class="featured-genre">MANHWA</p>
+          <p class="featured-tags">Comedy, Action, Game</p>
+          <p class="featured-summary">
+            <strong>SUMMARY</strong><br>
+            Hansu clears a legendary dungeon… and wakes up as a barbarian inside the game world. With no interface, no help, and only his wits, he must live by the blade in a cruel and unforgiving RPG world.
+          </p>
+          <p class="featured-status">Status: Ongoing</p>
+        </div>
+        <div class="featured-cover">
+          <img src="covers/barbarian.jpg" alt="Surviving the Game as a Barbarian">
+        </div>
+      </div>
+
+      <!-- Navigation Dots -->
+      <div class="featured-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
     </section>
+   
+    <!-- Regular Home Content -->
+    <h2>Currently Reading</h2>
+    <div class="card-list" id="currently-reading"></div>
+  </section>
+</main>
+
 
    <section id="dashboard">
   <h2>📊 My Dashboard</h2>
@@ -182,6 +301,15 @@
     <button type="submit">Add Manhwa</button>
   </form>
   <p id="adminStatusMsg"></p>
+
+  <!-- Admin Search Import Section -->
+<section id="importManhwa" class="admin-section">
+  <h3>Search & Import Manhwa</h3>
+  <input type="text" id="searchManhwaInput" placeholder="Search title..." />
+  <button id="searchManhwaBtn">Search</button>
+  <div id="searchResults" class="card-list"></div>
+</section>
+
 </section>
 
 <!-- Popup Modal -->
