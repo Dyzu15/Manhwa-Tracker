@@ -677,9 +677,19 @@ const searchInput = document.getElementById("searchManhwaInput");
 const searchResults = document.getElementById("searchResults");
 
 if (searchBtn && searchInput && searchResults) {
+  let lastSearchTime = 0; // Track the last time a search was made
   searchBtn.addEventListener("click", async () => {
-    const query = searchInput.value.trim();
-    if (!query) return;
+    const now = Date.now();
+if (now - lastSearchTime < 5000) {
+  searchResults.innerHTML = `<p>🕒 Please wait a few seconds before searching again.</p>`;
+  return;
+}
+lastSearchTime = now;
+
+const query = searchInput.value.trim();
+if (!query) return;
+
+    
 
     searchResults.innerHTML = "<p>🔍 Searching...</p>";
 
