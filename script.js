@@ -171,6 +171,12 @@ function saveChapterProgress() {
 
     localStorage.setItem("lastRead", currentPopupId);
     closePopup();
+    const statuses = JSON.parse(localStorage.getItem("statuses") || "{}");
+if (!statuses[currentPopupId]) {
+  statuses[currentPopupId] = "reading";
+  localStorage.setItem("statuses", JSON.stringify(statuses));
+}
+
     renderAll();
   }
 }
@@ -182,6 +188,11 @@ function getBookmarks() {
 
 function toggleBookmark(id) {
   let bookmarks = getBookmarks();
+  const statuses = JSON.parse(localStorage.getItem("statuses") || "{}");
+if (!statuses[id]) {
+  statuses[id] = "reading";
+  localStorage.setItem("statuses", JSON.stringify(statuses));
+}
   bookmarks = bookmarks.includes(id)
     ? bookmarks.filter(b => b !== id)
     : [...bookmarks, id];
@@ -199,6 +210,11 @@ function toggleRead(id) {
   const isRead = localStorage.getItem(id) === "read";
   isRead ? localStorage.removeItem(id) : localStorage.setItem(id, "read");
   localStorage.setItem("lastRead", id);
+  const statuses = JSON.parse(localStorage.getItem("statuses") || "{}");
+if (!statuses[id]) {
+  statuses[id] = "reading";
+  localStorage.setItem("statuses", JSON.stringify(statuses));
+  }
   renderAll();
 }
 
@@ -207,8 +223,9 @@ function updateStatus(id, newStatus) {
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
   statusMap[id] = newStatus;
   localStorage.setItem("statuses", JSON.stringify(statusMap));
-  renderAll();
+  renderAll(); // ✅ Trigger a UI refresh after status update
 }
+
 
 function getStatus(id) {
   const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
@@ -263,6 +280,7 @@ function renderList(data, containerId) {
     const savedRating = localStorage.getItem(`rating_${item.id}`) || "Not rated";
 
     const card = document.createElement("div");
+    const savedStatus = getStatus(item.id) || "";
     card.className = "card";
     card.innerHTML = `
   <img src="${item.cover}" alt="${item.title}" class="cover-image" />
@@ -273,14 +291,14 @@ function renderList(data, containerId) {
     <div class="actions">
       <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
       <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
-      <select onchange="updateStatus('${item.id}', this.value)">
-        <option value="">📂 Set Status</option>
-        <option value="reading">📖 Reading</option>
-        <option value="completed">🏁 Completed</option>
-        <option value="on_hold">⌛ On Hold</option>
-        <option value="dropped">❌ Dropped</option>
-        <option value="wishlist">💭 Wishlist</option>
-      </select>
+      <select onchange="updateStatus('${item.id}', this.value)" data-id="${item.id}" class="status-select">
+    <option value="" ${savedStatus === "" ? "selected" : ""}>📂 Set Status</option>
+    <option value="reading" ${savedStatus === "reading" ? "selected" : ""}>📖 Reading</option>
+    <option value="completed" ${savedStatus === "completed" ? "selected" : ""}>🏁 Completed</option>
+    <option value="on_hold" ${savedStatus === "on_hold" ? "selected" : ""}>⏸️ On Hold</option>
+    <option value="dropped" ${savedStatus === "dropped" ? "selected" : ""}>❌ Dropped</option>
+    <option value="wishlist" ${savedStatus === "wishlist" ? "selected" : ""}>💭 Wishlist</option>
+  </select>
     </div>
   </div>
 `;
@@ -294,6 +312,17 @@ function renderList(data, containerId) {
     });
 
     container.appendChild(card);
+
+setTimeout(() => {
+  document.querySelectorAll(".status-select").forEach(select => {
+  select.addEventListener("change", function () {
+    const id = this.getAttribute("data-id");
+    const value = this.value;
+    updateStatus(id, value);
+  });
+});
+}, 0);
+
   });
 }
 
@@ -354,7 +383,6 @@ async function fetchManhwaFromFirebase() {
 
  async function renderAll() {
   const bookmarked = getBookmarks();
-  const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
   const manhwaList = await fetchManhwaFromFirebase();
 
   const genreValue = document.getElementById("genreFilter")?.value.toLowerCase() || "all";
@@ -362,15 +390,16 @@ async function fetchManhwaFromFirebase() {
   const sortValue = document.getElementById("sortBy")?.value || "default";
   const keyword = document.getElementById("searchInput")?.value.toLowerCase() || "";
 
+  // === FILTER + SEARCH
   let filtered = manhwaList.filter(item => {
-    const matchesGenre = genreValue === "all" || (item.genre?.toLowerCase?.() || "") === genreValue;
+    const matchesGenre = genreValue === "all" || (item.genre?.toLowerCase() || "").includes(genreValue);
     const matchesSearch = !keyword || item.title.toLowerCase().includes(keyword);
-    const savedStatus = getStatus(item.id);
-    const matchesStatus = statusValue === "all" || savedStatus === statusValue;
+    const status = getStatus(item.id);
+    const matchesStatus = statusValue === "all" || status === statusValue;
     return matchesGenre && matchesSearch && matchesStatus;
   });
 
-  // Apply sorting
+  // === SORT
   if (sortValue === "title_asc") {
     filtered.sort((a, b) => a.title.localeCompare(b.title));
   } else if (sortValue === "title_desc") {
@@ -389,11 +418,28 @@ async function fetchManhwaFromFirebase() {
     });
   }
 
-  // Render to Home section only
-  renderList(filtered, "currently-reading");
+  // ✅ Home — show ALL manhwa with no filters
+renderList(manhwaList, "currently-reading");
 
-  // Still render dashboard with full list
-  renderDashboard(manhwaList);
+// ✅ My Library — only items that have any status set
+const statusItems = manhwaList.filter(item => getStatus(item.id) !== null);
+renderList(statusItems, "my-library-list");
+
+
+// ✅ Popular — based on bookmarks
+const bookmarkedItems = manhwaList.filter(item => bookmarked.includes(item.id));
+renderList(bookmarkedItems, "popular-list");
+
+// ✅ New Releases — sort by Firestore timestamp descending
+const sortedByDate = [...manhwaList].sort((a, b) => {
+  const aDate = a.createdAt?.seconds || 0;
+  const bDate = b.createdAt?.seconds || 0;
+  return bDate - aDate;
+}).reverse().slice(0, 10);
+renderList(sortedByDate, "new-releases");
+
+// ✅ Dashboard — always use full list
+renderDashboard(manhwaList);
 }
 
 // === Admin Email Config ===
