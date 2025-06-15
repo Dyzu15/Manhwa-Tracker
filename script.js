@@ -79,8 +79,8 @@ let currentPopupId = null;
 
 function openPopup(item) {
   currentPopupId = item.id;
-  const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
-  const savedRating = localStorage.getItem(`rating_${item.id}`) || "";
+  const savedChapter = userData[item.id]?.chapter || item.chapter;
+  const savedRating = userData[item.id]?.rating || "";
 
   const ratingInput = document.getElementById("ratingInput");
   const chapterInput = document.getElementById("chapterInput");
@@ -158,79 +158,116 @@ function closePopup() {
   document.getElementById("popupOverlay").classList.add("hidden");
 }
 
-function saveChapterProgress() {
+async function saveChapterProgress() {
   const newChapter = document.getElementById("chapterInput").value;
   const newRating = document.getElementById("ratingInput").value;
 
   if (currentPopupId && newChapter && Number(newChapter) > 0) {
-    localStorage.setItem(`chapter_${currentPopupId}`, newChapter);
+    const userId = firebase.auth().currentUser?.uid;
+    if (!userId) return;
+
+    const userDocRef = db.collection("users").doc(userId).collection("library").doc(currentPopupId);
+
+    const dataToUpdate = {
+      chapter: parseInt(newChapter),
+    };
 
     if (newRating) {
-      localStorage.setItem(`rating_${currentPopupId}`, newRating);
+      dataToUpdate.rating = parseInt(newRating);
     }
 
-    localStorage.setItem("lastRead", currentPopupId);
-    closePopup();
-    const statuses = JSON.parse(localStorage.getItem("statuses") || "{}");
-if (!statuses[currentPopupId]) {
-  statuses[currentPopupId] = "reading";
-  localStorage.setItem("statuses", JSON.stringify(statuses));
-}
+    try {
+      await userDocRef.set(dataToUpdate, { merge: true });
 
-    renderAll();
+      localStorage.setItem(`chapter_${currentPopupId}`, newChapter);
+      if (newRating) localStorage.setItem(`rating_${currentPopupId}`, newRating);
+
+      localStorage.setItem("lastRead", currentPopupId);
+      closePopup();
+      renderAll();
+    } catch (error) {
+      console.error("❌ Failed to save progress to Firestore:", error);
+    }
   }
 }
+
 
 // === Bookmarks ===
 function getBookmarks() {
   return JSON.parse(localStorage.getItem("bookmarks") || "[]");
 }
 
-function toggleBookmark(id) {
-  let bookmarks = getBookmarks();
-  const statuses = JSON.parse(localStorage.getItem("statuses") || "{}");
-if (!statuses[id]) {
-  statuses[id] = "reading";
-  localStorage.setItem("statuses", JSON.stringify(statuses));
-}
-  bookmarks = bookmarks.includes(id)
-    ? bookmarks.filter(b => b !== id)
-    : [...bookmarks, id];
+async function toggleBookmark(id) {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
 
-  localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-  renderAll();
+  const userId = user.uid;
+  const docRef = db.collection("users").doc(userId).collection("library").doc(id);
+
+  try {
+    const doc = await docRef.get();
+    const isBookmarked = doc.exists && doc.data().bookmarked === true;
+
+    await docRef.set({ bookmarked: !isBookmarked }, { merge: true });
+    renderAll();
+  } catch (error) {
+    console.error("Failed to toggle bookmark:", error);
+  }
 }
 
-function isBookmarked(id) {
-  return getBookmarks().includes(id);
+
+function isBookmarked(item) {
+  return item.bookmarked === true;
 }
+
+
+function getUserManhwaDoc(id) {
+  return db.doc(`users/${currentUserId}/library/${id}`);
+}
+
 
 // === Read Progress ===
-function toggleRead(id) {
-  const isRead = localStorage.getItem(id) === "read";
-  isRead ? localStorage.removeItem(id) : localStorage.setItem(id, "read");
-  localStorage.setItem("lastRead", id);
-  const statuses = JSON.parse(localStorage.getItem("statuses") || "{}");
-if (!statuses[id]) {
-  statuses[id] = "reading";
-  localStorage.setItem("statuses", JSON.stringify(statuses));
+async function toggleRead(id) {
+  const userId = firebase.auth().currentUser?.uid;
+  if (!userId) return;
+
+  const docRef = db.collection("users").doc(userId).collection("library").doc(id);
+  try {
+    const doc = await docRef.get();
+    const alreadyRead = doc.exists && doc.data().status === "read";
+    const newStatus = alreadyRead ? null : "read";
+
+    await docRef.set({ status: newStatus || "reading" }, { merge: true });
+    await docRef.set({ lastRead: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+
+    renderAll();
+  } catch (error) {
+    console.error("Failed to toggle read status:", error);
   }
-  renderAll();
 }
+
+
 
 // === Status ===
-function updateStatus(id, newStatus) {
-  const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
-  statusMap[id] = newStatus;
-  localStorage.setItem("statuses", JSON.stringify(statusMap));
-  renderAll(); // ✅ Trigger a UI refresh after status update
-}
+async function updateStatus(id, newStatus) {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
 
+  const userId = user.uid;
+  const docRef = db.collection("users").doc(userId).collection("library").doc(id);
+
+  try {
+    await docRef.set({ status: newStatus }, { merge: true });
+    renderAll();
+  } catch (error) {
+    console.error("Failed to update status:", error);
+  }
+}
 
 function getStatus(id) {
-  const statusMap = JSON.parse(localStorage.getItem("statuses") || "{}");
-  return statusMap[id] || null;
+  return userData[id]?.status || null;
 }
+  
 
 // === Render Cards ===
 function renderList(data, containerId) {
@@ -274,10 +311,11 @@ function renderList(data, containerId) {
   }
 
   filtered.forEach(item => {
-    const isRead = localStorage.getItem(item.id) === "read";
+    const isRead = userData[item.id]?.status === "read";
     const bookmarked = isBookmarked(item.id);
-    const savedChapter = localStorage.getItem(`chapter_${item.id}`) || item.chapter;
-    const savedRating = localStorage.getItem(`rating_${item.id}`) || "Not rated";
+    const savedChapter = userData[item.id]?.chapter || item.chapter;
+    const savedRating = userData[item.id]?.rating || "Not rated";
+
 
     const card = document.createElement("div");
     const savedStatus = getStatus(item.id) || "";
@@ -329,12 +367,12 @@ setTimeout(() => {
 
 // === Dashboard Rendering ===
 function renderDashboard(data) {
-  const recentId = localStorage.getItem("lastRead");
+  const recentId = localStorage.getItem("lastRead");  // ⬅ still optional for visual continuity
   const recentItem = data.find(item => item.id === recentId);
   const recentList = document.querySelector("#recently-read ul");
   const recentStats = document.getElementById("recentStats");
   recentList.innerHTML = "";
-  
+
   if (recentItem) {
     const li = document.createElement("li");
     li.textContent = recentItem.title;
@@ -344,7 +382,7 @@ function renderDashboard(data) {
 
   const rated = data
     .map(item => {
-      const rating = parseInt(localStorage.getItem(`rating_${item.id}`));
+      const rating = userData[item.id]?.rating;
       return rating ? { ...item, rating } : null;
     })
     .filter(Boolean)
@@ -375,6 +413,7 @@ function renderDashboard(data) {
 }
 
 
+
 // === Firebase Fetch + Render ===
 async function fetchManhwaFromFirebase() {
   const snapshot = await db.collection("manhwa").get();
@@ -384,6 +423,21 @@ async function fetchManhwaFromFirebase() {
  async function renderAll() {
   const bookmarked = getBookmarks();
   const manhwaList = await fetchManhwaFromFirebase();
+  let userLibrary = {};
+
+if (window.currentUserId) {
+  const snapshot = await db
+    .collection("users")
+    .doc(window.currentUserId)
+    .collection("library")
+    .get();
+
+  snapshot.forEach(doc => {
+    userLibrary[doc.id] = doc.data();
+  });
+}
+
+
 
   const genreValue = document.getElementById("genreFilter")?.value.toLowerCase() || "all";
   const statusValue = document.getElementById("statusFilter")?.value || "all";
@@ -519,36 +573,61 @@ function selectAvatar(imgElement) {
   imgElement.classList.add("selected");
 }
 
-function saveProfileChanges() {
+async function saveProfileChanges() {
   const newName = document.getElementById("displayNameInput").value.trim();
   const selectedAvatar = document.querySelector(".avatar-option.selected");
 
-  if (newName) localStorage.setItem("username", newName);
-  if (selectedAvatar) {
-    const avatarSrc = selectedAvatar.getAttribute("src");
-    localStorage.setItem("avatar", avatarSrc);
-  }
+const user = firebase.auth().currentUser;
+if (!user) return;
+
+const updates = {};
+if (newName) updates.username = newName;
+if (selectedAvatar) {
+  const avatarSrc = selectedAvatar.getAttribute("src");
+  updates.avatar = avatarSrc;
+}
+
+try {
+  await db.collection("users").doc(user.uid).set(updates, { merge: true });
+  closeEditProfile();
+  updateProfileDisplay(); // will also change
+} catch (error) {
+  console.error("❌ Failed to save profile:", error);
+}
+
+
 
   closeEditProfile();
   updateProfileDisplay();
 }
 
-function updateProfileDisplay() {
-  const username = localStorage.getItem("username") || "Guest";
-  const avatar = localStorage.getItem("avatar") || "./icons/icon-192.png";
-  document.getElementById("profileName").textContent = username;
-  document.getElementById("userDisplay").textContent = `👋 Hello, ${username}`;
-  document.getElementById("profilePic").src = avatar;
-  document.getElementById("navAvatar").src = avatar;
+async function updateProfileDisplay() {
+  const user = firebase.auth().currentUser;
+  const avatarFallback = "./icons/icon-192.png";
 
-  // Fallback for iOS web rendering issues
-  document.getElementById("profilePic").onerror = () => {
-    document.getElementById("profilePic").src = "./icons/icon-192.png";
-  };
-  document.getElementById("navAvatar").onerror = () => {
-    document.getElementById("navAvatar").src = "./icons/icon-192.png";
-  };
+  if (!user) {
+    document.getElementById("profileName").textContent = "Guest";
+    document.getElementById("userDisplay").textContent = "👋 Hello, Guest";
+    document.getElementById("profilePic").src = avatarFallback;
+    document.getElementById("navAvatar").src = avatarFallback;
+    return;
+  }
+
+  try {
+    const doc = await db.collection("users").doc(user.uid).get();
+    const data = doc.exists ? doc.data() : {};
+    const username = data.username || "Guest";
+    const avatar = data.avatar || avatarFallback;
+
+    document.getElementById("profileName").textContent = username;
+    document.getElementById("userDisplay").textContent = `👋 Hello, ${username}`;
+    document.getElementById("profilePic").src = avatar;
+    document.getElementById("navAvatar").src = avatar;
+  } catch (err) {
+    console.error("❌ Failed to load profile info:", err);
+  }
 }
+
 
 
 // === Page Init ===
