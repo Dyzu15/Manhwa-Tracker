@@ -76,6 +76,8 @@ function saveTags() {
 
 // === Popup ===
 let currentPopupId = null;
+let userData = {};
+
 
 function openPopup(item) {
   currentPopupId = item.id;
@@ -424,6 +426,7 @@ async function fetchManhwaFromFirebase() {
   const bookmarked = getBookmarks();
   const manhwaList = await fetchManhwaFromFirebase();
   let userLibrary = {};
+  userData = {}; 
 
 if (window.currentUserId) {
   const snapshot = await db
@@ -437,6 +440,7 @@ if (window.currentUserId) {
   });
 }
 
+ userData = userLibrary;
 
 
   const genreValue = document.getElementById("genreFilter")?.value.toLowerCase() || "all";
