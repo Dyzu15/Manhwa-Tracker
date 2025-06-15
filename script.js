@@ -550,6 +550,7 @@ function updateProfileDisplay() {
   };
 }
 
+
 // === Page Init ===
 document.addEventListener("DOMContentLoaded", () => {
   const savedSection = localStorage.getItem("lastSection") || "home";
