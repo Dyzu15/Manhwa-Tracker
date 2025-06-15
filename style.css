@@ -129,9 +129,6 @@ button:hover {
   }
 }
 
-/* Additional styles remain untouched to preserve layout */
-
-
 
 /* ========== Navbar ========== */
 .navbar {
@@ -190,6 +187,7 @@ button:hover {
   color: #fff;
   font-size: 14px;
 }
+
 
 /* ========== Hamburger Menu ========== */
 .hamburger-btn {
@@ -828,13 +826,15 @@ footer {
   color: white;
   padding: 30px;
   border-radius: 8px;
-  max-width: 350px;
+  max-width: 360px; /* (you can keep this) */
   width: 90%;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
+
 
 #profileModal .popup img {
   margin-bottom: 20px;
@@ -844,6 +844,7 @@ footer {
   border-radius: 50%;
   object-fit: cover;
 }
+
 
 #profileModal .popup h2 {
   font-size: 20px;
@@ -1476,7 +1477,7 @@ img[alt*="This content is not available"],
 @media screen and (min-width: 768px) {
   .featured-slide:hover {
     background: #181818;
-    box-shadow: 0 0 30px #ffc107;
+    box-shadow: 0 0 30px rgb(255, 193, 7);
     transition: background 0.3s ease, box-shadow 0.3s ease;
   }
 }
@@ -1587,3 +1588,115 @@ img[alt*="This content is not available"],
   border: 1px solid red;
   border-radius: 6px;
 }
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .navbar {
+    padding-top: calc(env(safe-area-inset-top) + 10px);
+  }
+}
+
+
+@media (max-width: 480px) {
+  #profileModal .popup {
+    padding: 20px;
+    width: 95%;
+    max-width: 320px;
+  }
+
+  #profileModal .popup h2 {
+    font-size: 18px;
+  }
+
+  #profileModal .popup ul li {
+    font-size: 14px;
+  }
+
+  #profileModal .popup .stats {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .avatar-options {
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .avatar-option {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+#profileModal .popup {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+#profileModal .popup {
+  border-radius: 12px;
+}
+
+/* ===== Login Modal Styles ===== */
+#loginModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+#loginModal.hidden {
+  display: none;
+}
+
+#loginModal .popup {
+  background: #1e1e1e;
+  padding: 32px 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 380px;
+  box-shadow: 0 0 20px rgba(255, 217, 0, 0.15);
+  text-align: center;
+  position: relative;
+}
+
+#loginModal .popup h3 {
+  font-size: 22px;
+  color: #ffffff;
+  margin-bottom: 24px;
+}
+
+#loginModal .popup button {
+  background: linear-gradient(to right, #ffcc00, #ffb700);
+  border: none;
+  color: black;
+  font-weight: bold;
+  padding: 14px 22px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  width: 100%;
+}
+
+#loginModal .popup button:hover {
+  background: linear-gradient(to right, #ffd500, #ffc300);
+}
+
+#loginModal .popup .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 22px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
