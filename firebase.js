@@ -11,6 +11,19 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+let currentUserId = null;
+
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    currentUserId = user.uid;
+    console.log("✅ Logged in as:", currentUserId);
+    renderAll(); // refresh UI with Firestore data
+  } else {
+    currentUserId = null;
+  }
+});
+
+
 // Get Firestore
 const db = firebase.firestore();
 
