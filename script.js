@@ -73,6 +73,18 @@ function saveTags() {
   tagsInput.value = "";  // Clear the input field after saving
 }
 
+// === Bookmarks Helper ===
+async function getBookmarksFromFirestore() {
+  const userId = currentUserId;
+  if (!userId) return [];
+
+  const snapshot = await db.collection("users").doc(userId).collection("library")
+    .where("bookmarked", "==", true)
+    .get();
+
+  return snapshot.docs.map(doc => doc.id);
+}
+
 
 // === Popup ===
 let currentPopupId = null;
@@ -166,7 +178,10 @@ async function saveChapterProgress() {
 
   if (currentPopupId && newChapter && Number(newChapter) > 0) {
     const userId = currentUserId;
-    if (!userId) return;
+  if (!firebase.auth().currentUser) {
+  showAuthWarning();
+  return;
+}
 
     const userDocRef = db.collection("users").doc(userId).collection("library").doc(currentPopupId);
 
@@ -193,15 +208,29 @@ async function saveChapterProgress() {
   }
 }
 
+function showAuthWarning() {
+  const el = document.getElementById("authWarning");
+  el?.classList.remove("hidden");
 
-// === Bookmarks ===
-function getBookmarks() {
-  return JSON.parse(localStorage.getItem("bookmarks") || "[]");
+  // Optional auto-close after 4 seconds
+  setTimeout(() => {
+    el?.classList.add("hidden");
+  }, 10000);
 }
 
+
+function closeAuthWarning() {
+  document.getElementById("authWarning")?.classList.add("hidden");
+}
+
+
+// === Bookmarks ===
 async function toggleBookmark(id) {
   const user = firebase.auth().currentUser;
-  if (!user) return;
+  if (!user) {
+    showAuthWarning();
+    return;
+  }
 
   const userId = user.uid;
   const docRef = db.collection("users").doc(userId).collection("library").doc(id);
@@ -209,13 +238,14 @@ async function toggleBookmark(id) {
   try {
     const doc = await docRef.get();
     const isBookmarked = doc.exists && doc.data().bookmarked === true;
-
     await docRef.set({ bookmarked: !isBookmarked }, { merge: true });
     renderAll();
   } catch (error) {
     console.error("Failed to toggle bookmark:", error);
   }
 }
+
+
 
 
 function isBookmarked(item) {
@@ -231,7 +261,10 @@ function getUserManhwaDoc(id) {
 // === Read Progress ===
 async function toggleRead(id) {
   const userId = currentUserId;
-  if (!userId) return;
+  if (!userId) {
+    showAuthWarning();
+    return;
+  }
 
   const docRef = db.collection("users").doc(userId).collection("library").doc(id);
   try {
@@ -253,7 +286,10 @@ async function toggleRead(id) {
 // === Status ===
 async function updateStatus(id, newStatus) {
   const user = firebase.auth().currentUser;
-  if (!user) return;
+  if (!firebase.auth().currentUser) {
+  showAuthWarning();
+  return;
+}
 
   const userId = user.uid;
   const docRef = db.collection("users").doc(userId).collection("library").doc(id);
@@ -300,14 +336,14 @@ function renderList(data, containerId) {
     filtered.sort((a, b) => b.title.localeCompare(a.title));
   } else if (sortValue === "rating_high") {
     filtered.sort((a, b) => {
-      const rA = parseInt(localStorage.getItem(`rating_${a.id}`)) || 0;
-      const rB = parseInt(localStorage.getItem(`rating_${b.id}`)) || 0;
+      const rA = userData[a.id]?.rating || 0;
+      const rB = userData[b.id]?.rating || 0;
       return rB - rA;
     });
   } else if (sortValue === "rating_low") {
     filtered.sort((a, b) => {
-      const rA = parseInt(localStorage.getItem(`rating_${a.id}`)) || 0;
-      const rB = parseInt(localStorage.getItem(`rating_${b.id}`)) || 0;
+      const rA = userData[a.id]?.rating || 0;
+      const rB = userData[b.id]?.rating || 0;
       return rA - rB;
     });
   }
@@ -368,7 +404,7 @@ setTimeout(() => {
 
 
 // === Dashboard Rendering ===
-function renderDashboard(data) {
+async function renderDashboard(data) {
   const recentId = localStorage.getItem("lastRead");  // ⬅ still optional for visual continuity
   const recentItem = data.find(item => item.id === recentId);
   const recentList = document.querySelector("#recently-read ul");
@@ -401,7 +437,7 @@ function renderDashboard(data) {
   });
   topRatedStats.textContent = `Top Rated: ${rated.length}`;
 
-  const bookmarks = getBookmarks();
+  const bookmarks = await getBookmarksFromFirestore();
   const bookmarkedItems = data.filter(item => bookmarks.includes(item.id)).slice(0, 5);
   const bookmarkedList = document.querySelector("#most-bookmarked ul");
   const bookmarkedStats = document.getElementById("bookmarkedStats");
@@ -423,7 +459,7 @@ async function fetchManhwaFromFirebase() {
 }
 
  async function renderAll() {
-  const bookmarked = getBookmarks();
+ const bookmarked = await getBookmarksFromFirestore(); // ✅ resolves the actual array
   const manhwaList = await fetchManhwaFromFirebase();
   let userLibrary = {};
   userData = {}; 
@@ -464,14 +500,14 @@ if (window.currentUserId) {
     filtered.sort((a, b) => b.title.localeCompare(a.title));
   } else if (sortValue === "rating_high") {
     filtered.sort((a, b) => {
-      const rA = parseInt(localStorage.getItem(`rating_${a.id}`)) || 0;
-      const rB = parseInt(localStorage.getItem(`rating_${b.id}`)) || 0;
+      const rA = userData[a.id]?.rating || 0;
+      const rB = userData[b.id]?.rating || 0;
       return rB - rA;
     });
   } else if (sortValue === "rating_low") {
     filtered.sort((a, b) => {
-      const rA = parseInt(localStorage.getItem(`rating_${a.id}`)) || 0;
-      const rB = parseInt(localStorage.getItem(`rating_${b.id}`)) || 0;
+      const rA = userData[a.id]?.rating || 0;
+      const rB = userData[b.id]?.rating || 0;
       return rA - rB;
     });
   }
@@ -529,28 +565,59 @@ function showLoggedInUser() {
 
 
 // === Profile Modal Functions ===
-function openProfile() {
-  const username = localStorage.getItem("username") || "Guest";
-  const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "[]");
-  const statuses = JSON.parse(localStorage.getItem("statuses") || "{}");
+async function openProfile() {
+  let username = "Guest";
+try {
+  const user = firebase.auth().currentUser;
+  if (user) {
+    const doc = await db.collection("users").doc(user.uid).get();
+    const data = doc.exists ? doc.data() : {};
+    username = data.username || "Guest";
+  }
+} catch (err) {
+  console.error("❌ Failed to load username:", err);
+}
 
   let completed = 0, dropped = 0;
-  for (let key in statuses) {
-    if (statuses[key] === "completed") completed++;
-    if (statuses[key] === "dropped") dropped++;
+
+try {
+  const userId = currentUserId;
+  if (userId) {
+    const snapshot = await db.collection("users").doc(userId).collection("library").get();
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.status === "completed") completed++;
+      if (data.status === "dropped") dropped++;
+    });
+  }
+} catch (err) {
+  console.error("❌ Failed to fetch statuses from Firestore:", err);
+}
+
+  
+
+  // 🔁 Fetch total bookmarks from Firestore
+  let bookmarkCount = 0;
+  try {
+    const userId = currentUserId;
+    if (userId) {
+      const snapshot = await db.collection("users").doc(userId).collection("library")
+        .where("bookmarked", "==", true)
+        .get();
+      bookmarkCount = snapshot.size;
+    }
+  } catch (err) {
+    console.error("❌ Failed to fetch bookmarks:", err);
   }
 
   document.getElementById("profileName").textContent = username;
-  document.getElementById("totalLibrary").textContent = bookmarks.length;
+  document.getElementById("totalLibrary").textContent = bookmarkCount;
   document.getElementById("totalCompleted").textContent = completed;
   document.getElementById("totalDropped").textContent = dropped;
 
   document.getElementById("profileModal").classList.remove("hidden");
 }
 
-function closeProfile() {
-  document.getElementById("profileModal").classList.add("hidden");
-}
 
 // === Edit Profile Modal Functions ===
 function openEditProfile() {
