@@ -643,6 +643,11 @@ function closeEditProfile() {
   document.getElementById("editProfileModal").classList.add("hidden");
 }
 
+function closeProfile() {
+  document.getElementById("profileModal")?.classList.add("hidden");
+}
+
+
 function selectAvatar(imgElement) {
   document.querySelectorAll(".avatar-option").forEach(img => img.classList.remove("selected"));
   imgElement.classList.add("selected");
