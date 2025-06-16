@@ -218,6 +218,10 @@ function showAuthWarning() {
   }, 10000);
 }
 
+function closeLogin() {
+  document.getElementById("loginModal")?.classList.add("hidden");
+}
+
 
 function closeAuthWarning() {
   document.getElementById("authWarning")?.classList.add("hidden");
