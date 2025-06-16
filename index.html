@@ -364,13 +364,15 @@
 </div>
 
   <!-- Firebase Login Modal -->
-  <div id="loginModal" class="popup-overlay hidden">
-    <div class="popup">
-      <span class="close-btn" onclick="closeLogin()">×</span>
-      <h3>Login with Google</h3>
-      <button type="button" onclick="loginWithGoogle()">Sign in with Google</button>
-    </div>
+<div id="loginModal" class="modal hidden">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeLogin()">×</button>
+    <h2>🔒 Login Required</h2>
+    <p>Please sign in to bookmark, mark as read, or update progress.</p>
+    <button onclick="loginWithGoogle()" class="login-btn">Sign in with Google</button>
   </div>
+</div>
+
 
   <!-- Profile Modal -->
   <div id="profileModal" class="popup-overlay hidden">
@@ -417,14 +419,14 @@
     });
   </script>
 
-  <div id="authWarning" class="popup-overlay hidden">
-  <div class="popup">
-    <span class="close-btn" onclick="closeAuthWarning()">×</span>
-    <h3>Login Required</h3>
-    <p>You need to be logged in to use this feature (bookmark, mark as read, update progress, etc).</p>
-    <button onclick="loginModal.classList.remove('hidden')">Login Now</button>
+  <div id="authWarning" class="modal hidden">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeAuthWarning()">×</button>
+    <h2>🔒 Login Required</h2>
+    <p>Please sign in to bookmark, mark as read, or update progress.</p>
+    <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="login-btn">Login Now</button>
   </div>
 </div>
-
+  
 </body>
 </html>
