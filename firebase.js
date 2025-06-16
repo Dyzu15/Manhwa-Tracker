@@ -11,15 +11,14 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-let currentUserId = null;
-
 firebase.auth().onAuthStateChanged(user => {
   if (user) {
-    currentUserId = user.uid;
-    console.log("✅ Logged in as:", currentUserId);
-    renderAll(); // refresh UI with Firestore data
+    window.currentUserId = user.uid;
+    console.log("✅ Logged in as:", window.currentUserId);
+    renderAll?.(); // only call if defined
   } else {
-    currentUserId = null;
+    window.currentUserId = null;
+    console.warn("⚠️ No user logged in");
   }
 });
 
