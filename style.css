@@ -1640,63 +1640,69 @@ img[alt*="This content is not available"],
 }
 
 /* ===== Login Modal Styles ===== */
-#loginModal {
+.modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.75);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 999;
+  justify-content: center;
+  z-index: 1000;
 }
 
-#loginModal.hidden {
-  display: none;
-}
-
-#loginModal .popup {
-  background: #1e1e1e;
-  padding: 32px 24px;
-  border-radius: 12px;
+.modal-content {
+  background: #111;
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 400px;
   width: 90%;
-  max-width: 380px;
-  box-shadow: 0 0 20px rgba(255, 217, 0, 0.15);
+  color: white;
   text-align: center;
   position: relative;
+  box-shadow: 0 0 20px rgba(255, 200, 0, 0.15);
 }
 
-#loginModal .popup h3 {
-  font-size: 22px;
-  color: #ffffff;
-  margin-bottom: 24px;
+.modal-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
-#loginModal .popup button {
-  background: linear-gradient(to right, #ffcc00, #ffb700);
-  border: none;
-  color: black;
-  font-weight: bold;
-  padding: 14px 22px;
-  font-size: 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  width: 100%;
+.modal-content p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: #ccc;
 }
 
-#loginModal .popup button:hover {
-  background: linear-gradient(to right, #ffd500, #ffc300);
-}
-
-#loginModal .popup .close-btn {
+.modal .close-btn {
   position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 22px;
-  color: #ffffff;
+  top: 0.75rem;
+  right: 0.75rem;
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  color: white;
   cursor: pointer;
 }
 
+.login-btn {
+  background: linear-gradient(to right, #f5a623, #fcd03f);
+  color: black;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.2s;
+}
+
+.login-btn:hover {
+  opacity: 0.9;
+}
+
+.hidden {
+  display: none !important;
+}
