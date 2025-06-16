@@ -165,7 +165,7 @@ async function saveChapterProgress() {
   const newRating = document.getElementById("ratingInput").value;
 
   if (currentPopupId && newChapter && Number(newChapter) > 0) {
-    const userId = firebase.auth().currentUser?.uid;
+    const userId = currentUserId;
     if (!userId) return;
 
     const userDocRef = db.collection("users").doc(userId).collection("library").doc(currentPopupId);
@@ -230,7 +230,7 @@ function getUserManhwaDoc(id) {
 
 // === Read Progress ===
 async function toggleRead(id) {
-  const userId = firebase.auth().currentUser?.uid;
+  const userId = currentUserId;
   if (!userId) return;
 
   const docRef = db.collection("users").doc(userId).collection("library").doc(id);
@@ -592,6 +592,7 @@ if (selectedAvatar) {
 }
 
 try {
+  console.log("Trying to write as:", firebase.auth().currentUser?.uid);
   await db.collection("users").doc(user.uid).set(updates, { merge: true });
   closeEditProfile();
   updateProfileDisplay(); // will also change
@@ -632,6 +633,19 @@ async function updateProfileDisplay() {
   }
 }
 
+let currentUserId = null;
+
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    currentUserId = user.uid;
+    console.log("✅ Logged in as:", currentUserId);
+    showLoggedInUser?.();
+    renderAll();
+  } else {
+    console.warn("⚠️ No user logged in");
+    currentUserId = null;
+  }
+});
 
 
 // === Page Init ===
