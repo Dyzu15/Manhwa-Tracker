@@ -193,6 +193,53 @@ async function saveChapterProgress() {
       dataToUpdate.rating = parseInt(newRating);
     }
 
+// 🔁 Update global ratingCount and ratingSum in manhwa collection
+const manhwaRef = db.collection("manhwa").doc(currentPopupId);
+await db.runTransaction(async (transaction) => {
+  const manhwaDoc = await transaction.get(manhwaRef);
+  const data = manhwaDoc.exists ? manhwaDoc.data() : {};
+  let prevRating = 0;
+const doc = await db.collection("users").doc(userId).collection("library").doc(currentPopupId).get();
+if (doc.exists) {
+  const data = doc.data();
+  prevRating = data.rating || 0;
+}
+
+
+  const currentCount = data.ratingCount || 0;
+  const currentSum = data.ratingSum || 0;
+
+  let newCount = currentCount;
+  let newSum = currentSum;
+
+  if (prevRating) {
+    newSum -= prevRating;
+    newCount = Math.max(0, currentCount - 1);
+  }
+
+  newSum += parseInt(newRating);
+  newCount += 1;
+
+if (!newRating || isNaN(newRating)) {
+  console.warn("⚠️ No valid newRating provided — skipping update.");
+  return; // prevent transaction from continuing
+}
+
+console.log("🟡 Updating manhwa:", {
+  id: currentPopupId,
+  newRating,
+  newSum,
+  newCount
+});
+
+
+ transaction.update(manhwaRef, {
+    ratingSum: newSum,
+    ratingCount: newCount
+  });
+});
+
+
     try {
       await userDocRef.set(dataToUpdate, { merge: true });
 
@@ -243,6 +290,14 @@ async function toggleBookmark(id) {
     const doc = await docRef.get();
     const isBookmarked = doc.exists && doc.data().bookmarked === true;
     await docRef.set({ bookmarked: !isBookmarked }, { merge: true });
+    const manhwaRef = db.collection("manhwa").doc(id);
+    await db.runTransaction(async (transaction) => {
+     const manhwaDoc = await transaction.get(manhwaRef);
+     const current = manhwaDoc.exists && manhwaDoc.data()?.bookmarkCount || 0;
+     const newCount = isBookmarked ? current - 1 : current + 1;
+  transaction.update(manhwaRef, { bookmarkCount: Math.max(newCount, 0) });
+});
+
     renderAll();
   } catch (error) {
     console.error("Failed to toggle bookmark:", error);
@@ -356,18 +411,23 @@ function renderList(data, containerId) {
     const isRead = userData[item.id]?.status === "read";
     const bookmarked = isBookmarked(item.id);
     const savedChapter = userData[item.id]?.chapter || item.chapter;
-    const savedRating = userData[item.id]?.rating || "Not rated";
-
+    const globalRatingCount = item.ratingCount || 0;
+    const globalRatingSum = item.ratingSum || 0;
 
     const card = document.createElement("div");
     const savedStatus = getStatus(item.id) || "";
-    card.className = "card";
-    card.innerHTML = `
+    const averageRating =
+  item.ratingCount > 0
+    ? (item.ratingSum / item.ratingCount).toFixed(1)
+    : "N/A";
+
+card.className = "card";
+card.innerHTML = `
   <img src="${item.cover}" alt="${item.title}" class="cover-image" />
   <div class="card-content">
     <h3>${item.title}</h3>
     <p>Chapter ${savedChapter}</p>
-    <p>⭐ Rating: ${savedRating}</p>
+    <p>⭐ Average Rating: ${averageRating}</p>
     <div class="actions">
       <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
       <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
@@ -524,9 +584,20 @@ const statusItems = manhwaList.filter(item => getStatus(item.id) !== null);
 renderList(statusItems, "my-library-list");
 
 
-// ✅ Popular — based on bookmarks
-const bookmarkedItems = manhwaList.filter(item => bookmarked.includes(item.id));
-renderList(bookmarkedItems, "popular-list");
+// ✅ Popular – based on average rating
+const topRated = manhwaList
+  .filter(item => item.ratingCount > 0)
+  .sort((a, b) => {
+    const aAvg = a.ratingSum / a.ratingCount;
+    const bAvg = b.ratingSum / b.ratingCount;
+    return bAvg - aAvg;
+  })
+  .slice(0, 10);
+
+console.log("🔥 Top Rated List:", topRated);
+
+renderList(topRated, "popular-list");
+
 
 // ✅ New Releases — sort by Firestore timestamp descending
 const sortedByDate = [...manhwaList].sort((a, b) => {
