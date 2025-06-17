@@ -59,15 +59,15 @@
   </video>
 
    <!-- 🔥 Glowing Logo/Text -->
-  <div class="video-overlay">Manhwa Tracker</div>
+  <!-- 🔥 Glowing Logo/Image -->
+   <div class="video-overlay">
+  <img src="icons/banner-logo.png" alt="Manhwa Tracker Logo" class="banner-logo" />
+</div>
 </section>
   
   <!-- Header -->
   <header class="navbar">
-    <div class="navbar-left">
-      <img src="./icons/icon-192.png" alt="Logo" class="logo-small" />
-      <span class="site-title">Manhwa Tracker</span>
-    </div>
+    <div class="navbar-left"></div>
     <div class="navbar-center">
       <button class="hamburger-btn" id="hamburgerBtn">☰</button>
       <nav class="navbar-links" id="navMenu">
@@ -79,22 +79,22 @@
       </nav>
     </div>
     <div class="navbar-right">
-      <input type="text" id="searchInput" placeholder="Search series..." />
-      <button class="login-btn" id="loginBtn">Login</button>
-      <button class="hidden" id="logoutBtn">Logout</button>
-      <button id="profileBtn" class="avatar-button">
-        <img id="navAvatar" src="./icons/icon-192.png" alt="Profile" />
-      </button>
-      <span id="userDisplay" class="user-display hidden"></span>
+  <input type="text" id="searchInput" placeholder="Search series..." />
+  <button class="login-btn" id="loginBtn">Login</button>
+  <button class="hidden" id="logoutBtn">Logout</button>
+  <button id="profileBtn" class="avatar-button">
+    <img id="navAvatar" src="./icons/icon-192.png" alt="Profile" />
+  </button>
+  <span id="userDisplay" class="user-display hidden"></span>
 
-      <!-- Add the Buy Me A Coffee button here -->
+  <!-- ✅ Buy Me A Coffee now inside -->
   <div class="buy-coffee-button">
     <a href="https://www.buymeacoffee.com/manhwatracker" target="_blank">
-  <img src="https://cdn.buymeacoffee.com/buttons/default-yellow.png" alt="Buy Me A Coffee" style="width: 130px; height: auto; border-radius: 8px;" />
-</a>
-
+      <img src="https://cdn.buymeacoffee.com/buttons/default-yellow.png" alt="Buy Me A Coffee" style="width: 130px; height: auto; border-radius: 8px;" />
+    </a>
   </div>
-    </div>
+</div>
+
   </header>
 
   <!-- Genre Filter -->
@@ -427,6 +427,7 @@
     <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="login-btn">Login Now</button>
   </div>
 </div>
-  
+
+
 </body>
 </html>
