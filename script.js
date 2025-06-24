@@ -390,9 +390,9 @@ card.innerHTML = `
     <p>⭐ Average Rating: ${averageRating}</p>
     <p>🧍 Your Rating: ${userData[item.id]?.rating || "Not rated"}</p>
     <div class="actions">
-      <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
-      <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
-      <select onchange="updateStatus('${item.id}', this.value)" data-id="${item.id}" class="status-select">
+  <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
+  <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
+  <select onchange="updateStatus('${item.id}', this.value)" data-id="${item.id}" class="status-select">
     <option value="" ${savedStatus === "" ? "selected" : ""}>📂 Set Status</option>
     <option value="reading" ${savedStatus === "reading" ? "selected" : ""}>📖 Reading</option>
     <option value="completed" ${savedStatus === "completed" ? "selected" : ""}>🏁 Completed</option>
@@ -400,7 +400,12 @@ card.innerHTML = `
     <option value="dropped" ${savedStatus === "dropped" ? "selected" : ""}>❌ Dropped</option>
     <option value="wishlist" ${savedStatus === "wishlist" ? "selected" : ""}>💭 Wishlist</option>
   </select>
-    </div>
+  ${localStorage.getItem("userEmail") === adminEmail ? `
+  <button onclick="editGenre('${item.id}', \`${Array.isArray(item.genre) ? item.genre.join(", ") : item.genre || ""}\`)">✏️ Edit Genre</button>
+  <button onclick="deleteManhwa('${item.id}')">🗑️ Delete</button>
+` : ""}
+
+</div>
   </div>
 `;
 
@@ -425,6 +430,38 @@ setTimeout(() => {
 }, 0);
 
   });
+}
+
+// === Admin Edit/Delete Functions ===
+function editGenre(id, currentGenreStr) {
+  const newGenre = prompt("Enter new genre(s), comma-separated:", currentGenreStr);
+  if (newGenre !== null) {
+    const genreArray = newGenre.split(",").map(g => g.trim().toLowerCase()).filter(Boolean);
+    db.collection("manhwa").doc(id).update({ genre: genreArray })
+      .then(() => {
+        alert("✅ Genre updated!");
+        renderAll();
+      })
+      .catch(err => {
+        console.error("❌ Failed to update genre:", err);
+        alert("Failed to update genre.");
+      });
+  }
+}
+
+
+function deleteManhwa(id) {
+  if (confirm("Are you sure you want to delete this manhwa?")) {
+    db.collection("manhwa").doc(id).delete()
+      .then(() => {
+        alert("🗑️ Manhwa deleted.");
+        renderAll();
+      })
+      .catch(err => {
+        console.error("❌ Failed to delete manhwa:", err);
+        alert("Failed to delete manhwa.");
+      });
+  }
 }
 
 
