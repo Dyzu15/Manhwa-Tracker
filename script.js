@@ -93,14 +93,20 @@ let userData = {};
 
 function openPopup(item) {
   currentPopupId = item.id;
-  const savedChapter = userData[item.id]?.chapter || item.chapter;
+  const savedChapter = 
+  userData[item.id]?.chapter !== undefined
+    ? userData[item.id].chapter
+    : item.chapter;
   const savedRating = userData[item.id]?.rating || "";
 
   const ratingInput = document.getElementById("ratingInput");
   const chapterInput = document.getElementById("chapterInput");
 
   if (ratingInput) ratingInput.value = savedRating;
-  if (chapterInput) chapterInput.value = savedChapter;
+  if (chapterInput && !chapterInput.value) {
+  chapterInput.value = savedChapter;
+}
+
   
   // Render saved tags from localStorage
   const savedTags = JSON.parse(localStorage.getItem(`tags_${currentPopupId}`)) || [];
@@ -173,87 +179,79 @@ function closePopup() {
 }
 
 async function saveChapterProgress() {
-  const newChapter = document.getElementById("chapterInput").value;
+  const newChapter = document.getElementById("popupChapterInput").value;
   const newRating = document.getElementById("ratingInput").value;
 
-  if (currentPopupId && newChapter && Number(newChapter) > 0) {
-    const userId = currentUserId;
-  if (!firebase.auth().currentUser) {
-  showAuthWarning();
-  return;
+  console.log("📥 Raw chapter input value:", newChapter);
+  console.log("⭐ Raw rating input value:", newRating);
+
+  const user = firebase.auth().currentUser;
+  const userId = user?.uid || currentUserId;
+  if (!user || !userId || !currentPopupId) {
+    showAuthWarning();
+    return;
+  }
+
+  const userDocRef = db.collection("users").doc(userId).collection("library").doc(currentPopupId);
+  
+  // ✅ Get previous rating BEFORE update
+  const prevSnap = await userDocRef.get();
+  const prevData = prevSnap.exists ? prevSnap.data() : {};
+  const prevRating = typeof prevData.rating === "number" ? prevData.rating : null;
+
+
+  const dataToUpdate = {};
+  const intChapter = parseInt(newChapter);
+  const intRating = parseInt(newRating);
+
+  if (!isNaN(intChapter) && intChapter >= 0) {
+  dataToUpdate.chapter = intChapter;
 }
 
-    const userDocRef = db.collection("users").doc(userId).collection("library").doc(currentPopupId);
+  if (!isNaN(intRating) && intRating >= 1 && intRating <= 10) {
+  dataToUpdate.rating = intRating;
+}
 
-    const dataToUpdate = {
-      chapter: parseInt(newChapter),
-    };
+  console.log("📘 Chapter being saved:", dataToUpdate.chapter);
 
-    if (newRating) {
-      dataToUpdate.rating = parseInt(newRating);
-    }
+  try {
+    await userDocRef.set(dataToUpdate, { merge: true });
+    await userDocRef.set({ status: "reading" }, { merge: true });
+  } catch (error) {
+    console.error("❌ Failed to save chapter/rating:", error);
+    return;
+  }
 
-// 🔁 Update global ratingCount and ratingSum in manhwa collection
+  // ✅ Global rating update
 const manhwaRef = db.collection("manhwa").doc(currentPopupId);
 await db.runTransaction(async (transaction) => {
   const manhwaDoc = await transaction.get(manhwaRef);
   const data = manhwaDoc.exists ? manhwaDoc.data() : {};
-  let prevRating = 0;
-const doc = await db.collection("users").doc(userId).collection("library").doc(currentPopupId).get();
-if (doc.exists) {
-  const data = doc.data();
-  prevRating = data.rating || 0;
-}
 
+  let ratingSum = data.ratingSum || 0;
+  let ratingCount = data.ratingCount || 0;
 
-  const currentCount = data.ratingCount || 0;
-  const currentSum = data.ratingSum || 0;
-
-  let newCount = currentCount;
-  let newSum = currentSum;
-
-  if (prevRating) {
-    newSum -= prevRating;
-    newCount = Math.max(0, currentCount - 1);
-  }
-
-  newSum += parseInt(newRating);
-  newCount += 1;
-
-if (!newRating || isNaN(newRating)) {
-  console.warn("⚠️ No valid newRating provided — skipping update.");
-  return; // prevent transaction from continuing
-}
-
-console.log("🟡 Updating manhwa:", {
-  id: currentPopupId,
-  newRating,
-  newSum,
-  newCount
-});
-
-
- transaction.update(manhwaRef, {
-    ratingSum: newSum,
-    ratingCount: newCount
-  });
-});
-
-
-    try {
-      await userDocRef.set(dataToUpdate, { merge: true });
-
-      localStorage.setItem(`chapter_${currentPopupId}`, newChapter);
-      if (newRating) localStorage.setItem(`rating_${currentPopupId}`, newRating);
-
-      localStorage.setItem("lastRead", currentPopupId);
-      closePopup();
-      renderAll();
-    } catch (error) {
-      console.error("❌ Failed to save progress to Firestore:", error);
+  if (!isNaN(intRating)) {
+    if (prevRating > 0) {
+      ratingSum = ratingSum - prevRating + intRating;
+    } else {
+      ratingSum += intRating;
+      ratingCount += 1;
     }
+    console.log("🔥 Updated ratingSum:", ratingSum, "ratingCount:", ratingCount);
+
+    transaction.set(manhwaRef, {
+      ratingSum,
+      ratingCount
+    }, { merge: true });
   }
+});
+
+  closePopup();
+  renderAll();
 }
+
+
 
 function showAuthWarning() {
   const el = document.getElementById("authWarning");
@@ -410,7 +408,10 @@ function renderList(data, containerId) {
   filtered.forEach(item => {
     const isRead = userData[item.id]?.status === "read";
     const bookmarked = isBookmarked(item.id);
-    const savedChapter = userData[item.id]?.chapter || item.chapter;
+    const savedChapter =
+  userData[item.id]?.chapter !== undefined && userData[item.id]?.chapter !== null
+    ? userData[item.id].chapter
+    : item.chapter;
     const globalRatingCount = item.ratingCount || 0;
     const globalRatingSum = item.ratingSum || 0;
 
@@ -418,8 +419,10 @@ function renderList(data, containerId) {
     const savedStatus = getStatus(item.id) || "";
     const averageRating =
   item.ratingCount > 0
-    ? (item.ratingSum / item.ratingCount).toFixed(1)
+    ? Math.min(10, (item.ratingSum / item.ratingCount)).toFixed(1)
     : "N/A";
+
+
 
 card.className = "card";
 card.innerHTML = `
@@ -428,6 +431,7 @@ card.innerHTML = `
     <h3>${item.title}</h3>
     <p>Chapter ${savedChapter}</p>
     <p>⭐ Average Rating: ${averageRating}</p>
+    <p>🧍 Your Rating: ${userData[item.id]?.rating || "Not rated"}</p>
     <div class="actions">
       <button onclick="toggleRead('${item.id}')">${isRead ? "✅ Marked as Read" : "📖 Mark as Read"}</button>
       <button onclick="toggleBookmark('${item.id}')">${bookmarked ? "📌 Bookmarked" : "☆ Add to Library"}</button>
