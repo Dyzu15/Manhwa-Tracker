@@ -362,6 +362,16 @@
   </div>
 </div>
 
+
+<div id="authWarning" class="modal hidden">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeAuthWarning()">×</button>
+    <h2>🔒 Login Required</h2>
+    <p>Please sign in to bookmark, mark as read, or update progress.</p>
+    <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="login-btn">Login Now</button>
+  </div>
+</div>
+
   <!-- Firebase Login Modal -->
 <div id="loginModal" class="modal hidden">
   <div class="modal-content">
@@ -417,16 +427,5 @@
       });
     });
   </script>
-
-  <div id="authWarning" class="modal hidden">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closeAuthWarning()">×</button>
-    <h2>🔒 Login Required</h2>
-    <p>Please sign in to bookmark, mark as read, or update progress.</p>
-    <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="login-btn">Login Now</button>
-  </div>
-</div>
-
-
 </body>
 </html>
