@@ -44,34 +44,6 @@ navLinks.forEach(link => {
   });
 });
 
-// Function to save tags when the user clicks "Save Tags"
-function saveTags() {
-  if (!currentPopupId) return; // Ensure there's a valid item ID
-
-  const tagsInput = document.getElementById("tagInput");  // Get tag input
-  const newTags = tagsInput.value.trim().split(",").map(tag => tag.trim()).filter(tag => tag);
-
-  // Get saved tags from localStorage or an empty array
-  let savedTags = JSON.parse(localStorage.getItem(`tags_${currentPopupId}`)) || [];
-  
-  // Merge new tags with existing ones, ensuring no duplicates
-  savedTags = [...new Set([...savedTags, ...newTags])];
-
-  // Save updated tags back to localStorage
-  localStorage.setItem(`tags_${currentPopupId}`, JSON.stringify(savedTags));
-
-  // Render the updated tags in the popup
-  const tagList = document.getElementById("tagList");
-  tagList.innerHTML = ""; // Clear existing tags
-  savedTags.forEach(tag => {
-    const span = document.createElement("span");
-    span.className = "tag";
-    span.textContent = tag;
-    tagList.appendChild(span);
-  });
-
-  tagsInput.value = "";  // Clear the input field after saving
-}
 
 // === Bookmarks Helper ===
 async function getBookmarksFromFirestore() {
@@ -107,19 +79,6 @@ function openPopup(item) {
   chapterInput.value = savedChapter;
 }
 
-  
-  // Render saved tags from localStorage
-  const savedTags = JSON.parse(localStorage.getItem(`tags_${currentPopupId}`)) || [];
-  const tagList = document.getElementById("popupTags");
-  if (tagList && Array.isArray(savedTags)) {
-    tagList.innerHTML = "";  // Clear existing tags
-    savedTags.forEach(tag => {
-      const span = document.createElement("span");
-      span.className = "tag";
-      span.textContent = tag;
-      tagList.appendChild(span);
-    });
-  }
 
   document.getElementById("popupCover").src = item.cover;
   document.getElementById("popupTitle").textContent = item.title;
@@ -160,17 +119,6 @@ function loadComments(seriesId) {
       console.error("Error loading comments:", err);
     });
   
-    // Render tags (optional: only if item.tags exists and is an array)
-  const tagList = document.getElementById("popupTags");
-  if (tagList && Array.isArray(item.tags)) {
-    tagList.innerHTML = "";
-    item.tags.forEach(tag => {
-      const span = document.createElement("span");
-      span.className = "tag";
-      span.textContent = tag;
-      tagList.appendChild(span);
-    });
-  }
 
 }
 
@@ -260,7 +208,7 @@ function showAuthWarning() {
   // Optional auto-close after 4 seconds
   setTimeout(() => {
     el?.classList.add("hidden");
-  }, 10000);
+  }, 5000);
 }
 
 function closeLogin() {
@@ -379,7 +327,7 @@ function renderList(data, containerId) {
   const keyword = document.getElementById("searchInput")?.value.toLowerCase() || "";
 
   let filtered = data.filter(item => {
-    const matchesGenre = genreValue === "all" || (item.genre?.toLowerCase?.() || "") === genreValue;
+    const matchesGenre = genreValue === "all" || (Array.isArray(item.genre) ? item.genre.includes(genreValue) : item.genre?.toLowerCase?.() === genreValue);
     const matchesSearch = !keyword || item.title.toLowerCase().includes(keyword);
     const savedStatus = getStatus(item.id);
     const matchesStatus = statusValue === "all" || savedStatus === statusValue;
@@ -554,7 +502,10 @@ if (window.currentUserId) {
 
   // === FILTER + SEARCH
   let filtered = manhwaList.filter(item => {
-    const matchesGenre = genreValue === "all" || (item.genre?.toLowerCase() || "").includes(genreValue);
+    const matchesGenre = genreValue === "all" || 
+  (Array.isArray(item.genre) 
+    ? item.genre.includes(genreValue)
+    : (item.genre?.toLowerCase?.() || "") === genreValue);
     const matchesSearch = !keyword || item.title.toLowerCase().includes(keyword);
     const status = getStatus(item.id);
     const matchesStatus = statusValue === "all" || status === statusValue;
@@ -975,7 +926,7 @@ if (searchBtn && searchInput && searchResults) {
   let lastSearchTime = 0; // Track the last time a search was made
   searchBtn.addEventListener("click", async () => {
     const now = Date.now();
-if (now - lastSearchTime < 5000) {
+if (now - lastSearchTime < 10000) {
   searchResults.innerHTML = `<p>🕒 Please wait a few seconds before searching again.</p>`;
   return;
 }
@@ -1032,7 +983,7 @@ if (!query) return;
           try {
             await db.collection("manhwa").add({
               title: manga.title,
-              genre: (manga.genres?.map(g => g.name).join(", ") || "unknown").toLowerCase(),
+              genre: manga.genres?.map(g => g.name.toLowerCase()) || ["unknown"],
               cover: manga.images?.jpg?.image_url || '',
               description: manga.synopsis || "",
               chapter: 0,
@@ -1089,3 +1040,26 @@ setInterval(() => {
 dots.forEach((dot, i) => {
   dot.addEventListener('click', () => showSlide(i));
 });
+
+// === One-Time Genre Field Fix ===
+async function convertGenresToArrayFormat() {
+  const snapshot = await db.collection("manhwa").get();
+  const batch = db.batch();
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    if (typeof data.genre === "string") {
+      const genresArray = data.genre.split(",").map(g => g.trim().toLowerCase());
+      batch.update(doc.ref, { genre: genresArray });
+    }
+  });
+
+  try {
+    await batch.commit();
+    console.log("✅ All genres converted to arrays.");
+  } catch (error) {
+    console.error("❌ Genre conversion failed:", error);
+  }
+}
+
+// Call this only once
+convertGenresToArrayFormat();
