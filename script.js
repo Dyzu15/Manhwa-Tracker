@@ -83,6 +83,15 @@ function openPopup(item) {
   document.getElementById("popupCover").src = item.cover;
   document.getElementById("popupTitle").textContent = item.title;
   document.getElementById("popupChapter").textContent = `Current: Chapter ${savedChapter}`;
+  const genreLine = document.getElementById("popupGenres");
+if (Array.isArray(item.genre)) {
+  genreLine.textContent = `Genres: ${item.genre.join(", ")}`;
+} else if (typeof item.genre === "string") {
+  genreLine.textContent = `Genre: ${item.genre}`;
+} else {
+  genreLine.textContent = "Genre: Unknown";
+}
+
   document.getElementById("popupDescription").textContent = item.description || "No description available.";
   document.getElementById("popupOverlay").classList.remove("hidden");
   loadComments(item.id); // load comments based on the clicked manhwa
