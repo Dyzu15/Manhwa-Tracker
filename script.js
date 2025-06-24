@@ -778,6 +778,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   showLoggedInUser();
   renderAll();
+  populateGenreDropdown();
 
  const addManhwaForm = document.getElementById("addManhwaForm");
 
@@ -1050,25 +1051,39 @@ dots.forEach((dot, i) => {
   dot.addEventListener('click', () => showSlide(i));
 });
 
-// === One-Time Genre Field Fix ===
-async function convertGenresToArrayFormat() {
+// === Dynamically Populate Genre Dropdown ===
+async function populateGenreDropdown() {
+  const genreSelect = document.getElementById("genreFilter");
+  if (!genreSelect) return;
+
   const snapshot = await db.collection("manhwa").get();
-  const batch = db.batch();
+  const genreSet = new Set();
+
   snapshot.forEach(doc => {
     const data = doc.data();
-    if (typeof data.genre === "string") {
-      const genresArray = data.genre.split(",").map(g => g.trim().toLowerCase());
-      batch.update(doc.ref, { genre: genresArray });
+    if (Array.isArray(data.genre)) {
+      data.genre.forEach(g => genreSet.add(g.trim().toLowerCase()));
+    } else if (typeof data.genre === "string") {
+      genreSet.add(data.genre.trim().toLowerCase());
     }
   });
 
-  try {
-    await batch.commit();
-    console.log("✅ All genres converted to arrays.");
-  } catch (error) {
-    console.error("❌ Genre conversion failed:", error);
-  }
-}
+  // Clear existing options
+  genreSelect.innerHTML = "";
 
-// Call this only once
-convertGenresToArrayFormat();
+  // Add default "All Genres"
+  const allOption = document.createElement("option");
+  allOption.value = "all";
+  allOption.textContent = "All Genres";
+  genreSelect.appendChild(allOption);
+
+  // Add sorted genres
+  Array.from(genreSet)
+    .sort()
+    .forEach(genre => {
+      const option = document.createElement("option");
+      option.value = genre;
+      option.textContent = genre.charAt(0).toUpperCase() + genre.slice(1);
+      genreSelect.appendChild(option);
+    });
+}
