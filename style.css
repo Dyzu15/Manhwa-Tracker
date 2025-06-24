@@ -1726,5 +1726,9 @@ img[alt*="This content is not available"],
   }
 }
 
-
+.genre-line {
+  font-size: 0.9rem;
+  color: #ffc20a;
+  margin-bottom: 0.5rem;
+}
 
