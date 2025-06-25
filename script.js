@@ -386,6 +386,11 @@ card.innerHTML = `
   <img src="${item.cover}" alt="${item.title}" class="cover-image" />
   <div class="card-content">
     <h3>${item.title}</h3>
+    <div class="genre-tags">
+  ${Array.isArray(item.genre)
+    ? item.genre.map(g => `<span class="genre-badge">${g}</span>`).join(" ")
+    : `<span class="genre-badge">${item.genre || "unknown"}</span>`}
+   </div>
     <p>Chapter ${savedChapter}</p>
     <p>⭐ Average Rating: ${averageRating}</p>
     <p>🧍 Your Rating: ${userData[item.id]?.rating || "Not rated"}</p>
@@ -1124,3 +1129,18 @@ async function populateGenreDropdown() {
       genreSelect.appendChild(option);
     });
 }
+
+// === Welcome Banner ===
+document.addEventListener("DOMContentLoaded", () => {
+  if (!localStorage.getItem("welcomeDismissed")) {
+    document.getElementById("welcomeBanner").classList.remove("hidden");
+  }
+
+  const dismissBtn = document.getElementById("dismissBannerBtn");
+  if (dismissBtn) {
+    dismissBtn.addEventListener("click", () => {
+      document.getElementById("welcomeBanner").classList.add("hidden");
+      localStorage.setItem("welcomeDismissed", "true");
+    });
+  }
+});
