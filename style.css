@@ -1732,3 +1732,59 @@ img[alt*="This content is not available"],
   margin-bottom: 0.5rem;
 }
 
+.genre-badge {
+  background-color: #444;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 12px;
+  text-transform: capitalize;
+}
+
+.genre-tags {
+  margin: 6px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.genre-badge {
+  display: inline-block;
+  background-color: #444;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin: 2px 4px 2px 0;
+  white-space: nowrap;
+}
+
+.welcome-banner {
+  background: #222;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.welcome-banner button {
+  margin-top: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: #f4cc2c;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.welcome-banner.hidden {
+  display: none;
+}
+
+
